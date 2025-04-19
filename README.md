@@ -1,36 +1,110 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# OptEx - AI-Powered Personal Finance Management 💰🚀
 
-## Getting Started
+## 📌 About OptEx
+OptEx is an **AI-driven personal finance management web app** that helps users **track expenses, manage budgets, and plan investments** effortlessly. With **AI-based receipt scanning, real-time currency conversion, UPI integration, and smart financial insights**, OptEx is the ultimate financial companion.
 
-First, run the development server:
+## 🚀 Problem We Are Solving
+Managing personal finances can be **time-consuming and complex**, especially for:
+- **Freelancers & professionals** struggling to track multiple income sources.
+- **Students & young professionals** needing better savings & investment strategies.
+- **Small business owners** managing expenses manually.
+- **Individuals filing ITR** who require **categorized financial reports.**
 
+OptEx simplifies this by **automating financial tracking**, offering **AI-driven insights**, and providing a **seamless tax-ready experience**.
+
+## ✨ Key Features
+1. **Expense & Income Tracking** – Manually or via **AI-powered receipt scanning** 📄.
+2. **Multi-Account Support** – Track multiple accounts with a **default account option** 🔄.
+3. **Real-Time Currency Converter** – Convert & manage multiple currencies 🌎💱.
+4. **Smart Budgeting & Alerts** – Get AI-based **budget recommendations** & alerts 📊.
+5. **Savings Goal Tracking** – Set monthly savings goals & receive alerts on completion 🎯.
+6. **Investment Insights** – AI-driven **investment tracking & recommendations** 📈.
+7. **Automated Reports & ITR Assistance** – Generate **tax-ready financial summaries** 📝.
+8. **UPI Integration & Real-Time Expense Syncing** – Auto-track expenses from **UPI payments** 💳.
+9. **Security & Bot Protection** – Implemented **Arcjet bot detection** 🛡️.
+10. **Email Notifications** – Automated alerts using **Twilio SendGrid** ✉️.
+
+## 🏗️ Tech Stack
+### **Frontend & Backend**
+- **Next.js (React Framework)** ⚛️
+- **Typescript & JavaScript** 🟨
+- **Tailwind CSS** 🎨 (for modern UI design)
+- **ShadCN UI** 🏗️ (for pre-built UI components)
+
+### **Database**
+- **Prisma ORM (Supabase)** 🗄️ (for efficient data management)
+
+### **AI & Automation**
+- **Google Gemini API** 🤖 (for AI-powered expense categorization & recommendations)
+- **Twilio SendGrid** 📩 (for automated email alerts)
+- **Arcjet** 🔒 (for bot detection & security)
+
+## 🎯 Target Audience
+- **Freelancers & Gig Workers** – Managing multiple revenue streams.
+- **Young Professionals & Students** – Learning financial discipline.
+- **Small Business Owners** – Automating financial tracking.
+- **Individuals Filing ITR** – Generating tax-compliant reports effortlessly.
+
+## 📈 Business Model
+- **Freemium Model** – Basic features are free, with advanced features in **Pro Plan**.
+- **Subscription-Based** – AI-powered features, tax assistance, and UPI integration under a paid plan.
+- **Partnerships** – Collaborations with **banks & fintech companies** for UPI & investment tracking.
+- **Affiliate Marketing** – Recommending financial services (loans, credit cards, etc.)
+
+## 🛠️ Installation & Setup
+1️⃣ Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+  git clone https://github.com/your-repo/OptEx.git
+  cd OptEx
+```
+2️⃣ Install dependencies:
+```bash
+  npm install  # or yarn install
+```
+3️⃣ Set up environment variables (`.env` file):
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+NEXT_PUBLIC_TWILIO_SENDGRID_KEY=your_sendgrid_api_key
+```
+4️⃣ Run the development server:
+```bash
+  npm run dev  # or yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🤝How to make Contribution
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+We welcome contributions from developers of all skill levels! Whether you're fixing a bug, adding new features, or improving documentation, your help is appreciated. 
 
-## Learn More
+To contribute:
 
-To learn more about Next.js, take a look at the following resources:
+1. ⭐ Star the repository to show your support.
+2. 📝 Create an issue outlining how you'd like to contribute to the project.
+3. 🍴 Fork the repository to make your own copy:
+   ```sh
+   # Click on the "Fork" button at the top right of the repository page
+4. 💻 Implement your changes in the forked repository by creating a new branch for your feature or fix:
+   ```
+   git checkout -b feature-or-fix-name
+   ```
+5. Make your changes and commit them using Conventional Commits:
+   ```
+   git commit -m "feat: describe your changes"
+   ```
+6. 🔄 Push your branch:
+   ```
+   git push origin feature-or-fix-name
+   ```
+7. Open a pull request and describe the changes you made, mentioning the issue number you're addressing.
+8. ⏳ Wait for review and feedback from the maintainers.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📜 License
+This project is licensed under the **MIT License**.
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ✨ Connect With Us
+📧 Email: amansingh080704@gmail.com  
