@@ -42,6 +42,8 @@ export async function getAccountWithTransactions(accountId) {
 
   if (!account) return null;
 
+
+
   return {
     ...serializeDecimal(account),
     transactions: account.transactions.map(serializeDecimal),
@@ -59,7 +61,7 @@ export async function bulkDeleteTransactions(transactionIds) {
 
     if (!user) throw new Error("User not found");
 
-    // Get transactions to calculate balance changes
+
     const transactions = await db.transaction.findMany({
       where: {
         id: { in: transactionIds },
