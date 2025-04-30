@@ -7,9 +7,13 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { checkUser } from "@/lib/checkUser";
 import Image from "next/image";
 import { DarkMode } from "@/components/DarkMode";
-
 const Header = async () => {
-  await checkUser();
+  try {
+    await checkUser();
+  } catch (error) {
+    console.error("Error in Header:", error.message);
+    // Optionally, redirect to login or show an error message
+  }
 
   return (
     <header className="fixed top-0 w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-md z-50 border-b dark:border-gray-700">
