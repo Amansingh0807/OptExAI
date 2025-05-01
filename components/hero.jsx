@@ -14,8 +14,15 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PricingPlan, pricingPlan } from "@/lib/pricingplan";
+import { useRouter } from "next/navigation";
+import { getStripe } from "@/lib/stripe-client"; // ✅ Ensure this path is correct
 
-const HeroSection = () => {
+// type Props = {
+//   userId: string | undefined;
+// };
+
+const HeroSection = ({ userId }) => {
+  const router = useRouter();
   const imageRef = useRef(null);
 
   useEffect(() => {
@@ -25,7 +32,6 @@ const HeroSection = () => {
       const scrollPosition = window.scrollY;
       const scrollThreshold = 100;
 
-      // ✅ Null check added
       if (imageElement) {
         if (scrollPosition > scrollThreshold) {
           imageElement.classList.add("scrolled");
@@ -39,9 +45,38 @@ const HeroSection = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const checkoutHandler = async (price, plan) => {
+    if (!userId) {
+      router.push("/sign-in");
+      return;
+    }
+
+    if (price === 0) {
+      // Free plan logic can be added here
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/stripe/checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ price, userId, plan }),
+      });
+
+      const { sessionId } = await res.json();
+
+      const stripe = await getStripe();
+      stripe?.redirectToCheckout({ sessionId });
+    } catch (error) {
+      console.error("Stripe checkout error:", error);
+    }
+  };
+
   return (
     <section
-      ref={imageRef} // ✅ Reference attached here
+      ref={imageRef}
       className="pt-40 pb-20 px-4 bg-white dark:bg-gray-800 text-black dark:text-white"
     >
       <div className="container mx-auto text-center">
@@ -70,10 +105,10 @@ const HeroSection = () => {
       <div className="flex flex-col items-center mt-10">
         <h1 className="font-extrabold text-3xl">Explore Our Plans and Pricing Options</h1>
         <p className="text-gray-500 text-center">
-        Maximize Your Savings with Early Payments and Unlimited Credits
+          Maximize Your Savings with Early Payments and Unlimited Credits
         </p>
 
-        {/* Responsive Grid for Cards */}
+        {/* Pricing Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
           {pricingPlan.map((plan) => (
             <div
@@ -82,13 +117,13 @@ const HeroSection = () => {
             >
               <div
                 className="absolute inset-0 bg-gradient-to-r from-blue-500 to-green-600 blur-2xl opacity-50 -z-10 
-              rounded-xl group-hover:opacity-70 transition-opacity duration-300"
+                rounded-xl group-hover:opacity-70 transition-opacity duration-300"
               ></div>
 
               <Card
                 className={`w-full max-w-sm flex flex-col justify-between transition-transform duration-300 
-          group-hover:scale-105 shadow-xl 
-          ${plan.level === "Enterprise" && "bg-[#1c1c1c] text-white"}`}
+                group-hover:scale-105 shadow-xl 
+                ${plan.level === "Enterprise" && "bg-[#1c1c1c] text-white"}`}
               >
                 <CardHeader className="flex flex-row items-center gap-2">
                   <CardTitle>{plan.level}</CardTitle>
