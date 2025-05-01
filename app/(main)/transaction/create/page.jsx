@@ -4,8 +4,8 @@ import { AddTransactionForm } from "../_components/transaction-form";
 import { getTransaction } from "@/actions/transaction";
 
 export default async function AddTransactionPage({ searchParams }) {
-  // ✅ Fix: Access 'edit' safely as searchParams is a plain object
-  const editId = searchParams?.edit;
+  // ✅ Await searchParams before accessing its properties
+  const editId = (await searchParams)?.edit;
 
   const accounts = await getUserAccounts();
 

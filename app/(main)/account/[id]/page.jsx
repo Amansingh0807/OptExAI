@@ -7,7 +7,8 @@ import { AccountChart } from "../_components/account-chart";
 
 // Ensure this is an async server component
 export default async function AccountPage({ params }) {
-  const accountId = params?.id; // Safely access params.id
+  // ✅ Await params before accessing its properties
+  const { id: accountId } = await params;
 
   if (!accountId) {
     notFound(); // Handle missing ID gracefully
@@ -23,12 +24,12 @@ export default async function AccountPage({ params }) {
 
   return (
     <div className="space-y-8 mb-16 px-5">
-      <div className="flex gap-4 items-end   justify-between">
+      <div className="flex gap-4 items-end justify-between">
         <div>
           <h1 className="text-5xl sm:text-6xl mt-24 text-center font-bold tracking-tight gradient-title capitalize">
             {account.name}
           </h1>
-          <p className="text-muted-foreground ">
+          <p className="text-muted-foreground">
             {account.type.charAt(0).toUpperCase() + account.type.slice(1).toLowerCase()} Account
           </p>
         </div>
