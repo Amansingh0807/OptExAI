@@ -13,6 +13,7 @@ import HeroSection from "@/components/hero";
 import Link from "next/link";
 import MoneyConverter from "@/components/MoneyConverter";
 import LoanCalculator from "@/components/LoanCalculator";
+export const dynamic = "force-dynamic";
 
 
 const LandingPage = () => {

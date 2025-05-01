@@ -1,3 +1,4 @@
+"use server"
 import React from "react";
 import { Button } from "./ui/button";
 import { PenBox, LayoutDashboard } from "lucide-react";

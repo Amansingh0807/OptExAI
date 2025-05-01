@@ -1,5 +1,6 @@
 import SavingsForm from "./_components/SavingsForm";
 import SavingsList from "./_components/SavingsList";
+export const dynamic = "force-dynamic";
 
 export default function SavingsPage() {
   return (
