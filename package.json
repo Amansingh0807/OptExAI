@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "npm install --legacy-peer-deps && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@arcjet/next": "^1.0.0-beta.6",
@@ -35,9 +36,9 @@
     "lucide-react": "^0.501.0",
     "next": "15.3.1",
     "next-themes": "^0.4.6",
-    "react": "^18.0.0",
-    "react-day-picker": "^9.8.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
     "react-hook-form": "^7.56.1",
     "react-spinners": "^0.17.0",
     "recharts": "^2.15.3",
@@ -57,11 +58,5 @@
     "postcss": "^8.5.3",
     "prisma": "^6.7.0",
     "tailwindcss": "^4.1.4"
-  },
-  "overrides": {
-    "react-day-picker": {
-      "react": "$react",
-      "react-dom": "$react-dom"
-    }
   }
 }
