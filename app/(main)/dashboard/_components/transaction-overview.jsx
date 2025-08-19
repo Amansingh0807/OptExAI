@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   PieChart,
   Pie,
@@ -16,7 +16,7 @@ import {
 import { format } from "date-fns";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency, convertCurrency } from "@/lib/currency";
 
 import {
   Select,
@@ -42,8 +42,50 @@ export function DashboardOverview({ accounts, transactions, userCurrency = "USD"
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id
   );
+  const [convertedTransactions, setConvertedTransactions] = useState(transactions);
 
-  const accountTransactions = transactions.filter(
+  // Convert transactions to user's preferred currency
+  useEffect(() => {
+    const convertTransactions = async () => {
+      if (!transactions.length) {
+        setConvertedTransactions([]);
+        return;
+      }
+
+      try {
+        const converted = await Promise.all(
+          transactions.map(async (transaction) => {
+            // Find the account for this transaction to get its currency
+            const account = accounts.find(acc => acc.id === transaction.accountId);
+            const accountCurrency = account?.currency || "USD";
+            
+            // Convert amount if currencies are different
+            let convertedAmount = transaction.amount;
+            if (accountCurrency !== userCurrency) {
+              convertedAmount = await convertCurrency(transaction.amount, accountCurrency, userCurrency);
+            }
+            
+            return {
+              ...transaction,
+              amount: convertedAmount,
+              originalAmount: transaction.amount,
+              originalCurrency: accountCurrency,
+              displayCurrency: userCurrency,
+            };
+          })
+        );
+        setConvertedTransactions(converted);
+      } catch (error) {
+        console.error("Currency conversion error:", error);
+        // Fallback to original transactions
+        setConvertedTransactions(transactions);
+      }
+    };
+
+    convertTransactions();
+  }, [transactions, accounts, userCurrency]);
+
+  const accountTransactions = convertedTransactions.filter(
     (t) => t.accountId === selectedAccountId
   );
 
@@ -120,7 +162,7 @@ export function DashboardOverview({ accounts, transactions, userCurrency = "USD"
                     </div>
                     <div className="flex items-center gap-2 text-red-500">
                       <ArrowDownRight className="mr-1 h-4 w-4" />
-                      <CurrencyDisplay amount={transaction.amount} />
+                      <CurrencyDisplay amount={transaction.amount} currency={userCurrency} />
                     </div>
                   </div>
                 ))
@@ -170,7 +212,7 @@ export function DashboardOverview({ accounts, transactions, userCurrency = "USD"
                     </div>
                     <div className="flex items-center gap-2 text-green-500">
                       <ArrowUpRight className="mr-1 h-4 w-4" />
-                      <CurrencyDisplay amount={transaction.amount} />
+                      <CurrencyDisplay amount={transaction.amount} currency={userCurrency} />
                     </div>
                   </div>
                 ))

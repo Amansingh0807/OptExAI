@@ -3,7 +3,7 @@
 import { ArrowUpRight, ArrowDownRight, CreditCard } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useFetch from "@/hooks/use-fetch";
 import {
   Card,
@@ -16,20 +16,32 @@ import Link from "next/link";
 import { updateDefaultAccount } from "@/actions/account";
 import { toast } from "sonner";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { convertCurrency } from "@/lib/currency";
 
-export function AccountCard({ account }) {
+export function AccountCard({ account, userCurrency }) {
   const { 
     name, 
     type, 
     balance, 
     id, 
     isDefault,
-    displayBalance,
-    displayCurrency,
-    originalBalance,
-    originalCurrency,
-    formattedBalance
+    currency
   } = account;
+
+  const [convertedBalance, setConvertedBalance] = useState(null);
+
+  useEffect(() => {
+    const performConversion = async () => {
+      if (currency && userCurrency && currency !== userCurrency) {
+        const converted = await convertCurrency(balance, currency, userCurrency);
+        setConvertedBalance(converted);
+      } else {
+        setConvertedBalance(balance);
+      }
+    };
+    
+    performConversion();
+  }, [balance, currency, userCurrency]);
 
   const {
     loading: updateDefaultLoading,
@@ -76,10 +88,10 @@ export function AccountCard({ account }) {
         </CardHeader>
         <CardContent>
           <CurrencyDisplay
-            amount={displayBalance || balance}
-            currency={displayCurrency || "USD"}
-            originalAmount={originalBalance !== displayBalance ? originalBalance : null}
-            originalCurrency={originalCurrency}
+            amount={convertedBalance !== null ? convertedBalance : balance}
+            currency={userCurrency}
+            originalAmount={currency !== userCurrency ? balance : null}
+            originalCurrency={currency}
             className="text-2xl font-bold"
             showOriginal={true}
           />
@@ -87,9 +99,9 @@ export function AccountCard({ account }) {
             <p className="text-xs text-muted-foreground">
               {type.charAt(0) + type.slice(1).toLowerCase()} Account
             </p>
-            {originalCurrency && originalCurrency !== displayCurrency && (
+            {currency && currency !== userCurrency && (
               <Badge variant="outline" className="text-xs">
-                {originalCurrency}
+                {currency}
               </Badge>
             )}
           </div>

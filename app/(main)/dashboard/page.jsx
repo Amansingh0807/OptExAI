@@ -1,6 +1,6 @@
 import { Suspense } from "react";
-import { getUserAccountsWithCurrency, getDashboardDataWithCurrency } from "@/actions/dashboard";
-import { getCurrentBudgetWithCurrency } from "@/actions/budget";
+import { getUserAccounts, getDashboardData } from "@/actions/dashboard";
+import { getCurrentBudget } from "@/actions/budget";
 import { getUserCurrency } from "@/actions/currency";
 import { currentUser } from "@clerk/nextjs/server";
 import { AccountCard } from "./_components/account-card";
@@ -13,19 +13,21 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const [accounts, transactions, userCurrencyData, user] = await Promise.all([
-    getUserAccountsWithCurrency(),
-    getDashboardDataWithCurrency(),
+    getUserAccounts(),
+    getDashboardData(),
     getUserCurrency(),
     currentUser(),
   ]);
 
   const defaultAccount = accounts?.find((account) => account.isDefault);
 
-  // Get budget for default account with currency conversion
+  // Get budget for default account
   let budgetData = null;
   if (defaultAccount) {
-    budgetData = await getCurrentBudgetWithCurrency(defaultAccount.id);
+    budgetData = await getCurrentBudget(defaultAccount.id);
   }
+
+  const userCurrency = userCurrencyData.currency;
 
   return (
     <div className="space-y-8">
@@ -34,13 +36,14 @@ export default async function DashboardPage() {
         initialBudget={budgetData?.budget}
         currentExpenses={budgetData?.currentExpenses || 0}
         userEmail={user?.emailAddresses?.[0]?.emailAddress}
+        userCurrency={userCurrency}
       />
 
       {/* Dashboard Overview */}
       <DashboardOverview
         accounts={accounts}
         transactions={transactions || []}
-        userCurrency={userCurrencyData.currency}
+        userCurrency={userCurrency}
       />
 
       {/* Accounts Grid */}
@@ -55,7 +58,7 @@ export default async function DashboardPage() {
         </CreateAccountDrawer>
         {accounts.length > 0 &&
           accounts?.map((account) => (
-            <AccountCard key={account.id} account={account} />
+            <AccountCard key={account.id} account={account} userCurrency={userCurrency} />
           ))}
       </div>
     </div>

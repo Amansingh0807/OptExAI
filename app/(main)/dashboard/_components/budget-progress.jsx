@@ -5,6 +5,7 @@ import { Pencil, Check, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { convertCurrency } from "@/lib/currency";
 
 import {
   Card,
@@ -18,12 +19,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateBudget } from "@/actions/budget";
 
-export function BudgetProgress({ initialBudget, currentExpenses, userEmail }) {
+export function BudgetProgress({ initialBudget, currentExpenses, userEmail, userCurrency = "USD" }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
   );
   const [emailSent, setEmailSent] = useState(false); // Prevent duplicate emails
+  const [convertedBudgetAmount, setConvertedBudgetAmount] = useState(initialBudget?.amount || 0);
+  const [convertedCurrentExpenses, setConvertedCurrentExpenses] = useState(currentExpenses || 0);
 
   const {
     loading: isLoading,
@@ -32,9 +35,34 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail }) {
     error,
   } = useFetch(updateBudget);
 
-  const percentUsed = initialBudget
-    ? (currentExpenses / initialBudget.amount) * 100
+  const percentUsed = convertedBudgetAmount
+    ? (convertedCurrentExpenses / convertedBudgetAmount) * 100
     : 0;
+
+  // Handle currency conversion when userCurrency changes
+  useEffect(() => {
+    const convertAmounts = async () => {
+      if (initialBudget?.amount) {
+        // Assuming budget is stored in USD by default, convert to user's currency
+        try {
+          const convertedBudget = await convertCurrency(initialBudget.amount, "USD", userCurrency);
+          const convertedExpenses = await convertCurrency(currentExpenses, "USD", userCurrency);
+          setConvertedBudgetAmount(convertedBudget);
+          setConvertedCurrentExpenses(convertedExpenses);
+        } catch (error) {
+          console.error("Currency conversion error:", error);
+          // Fallback to original amounts
+          setConvertedBudgetAmount(initialBudget.amount);
+          setConvertedCurrentExpenses(currentExpenses);
+        }
+      } else {
+        setConvertedBudgetAmount(0);
+        setConvertedCurrentExpenses(currentExpenses);
+      }
+    };
+
+    convertAmounts();
+  }, [userCurrency, initialBudget?.amount, currentExpenses]);
 
   const handleUpdateBudget = async () => {
     const amount = parseFloat(newBudget);
@@ -137,8 +165,8 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail }) {
                   {initialBudget
                     ? (
                         <span className="flex items-center gap-1">
-                          <CurrencyDisplay amount={currentExpenses} /> of{" "}
-                          <CurrencyDisplay amount={initialBudget.amount} /> spent
+                          <CurrencyDisplay amount={convertedCurrentExpenses} currency={userCurrency} /> of{" "}
+                          <CurrencyDisplay amount={convertedBudgetAmount} currency={userCurrency} /> spent
                         </span>
                       )
                     : "No budget set"}
