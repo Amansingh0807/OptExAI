@@ -77,25 +77,34 @@ const HeroSection = ({ userId }) => {
   return (
     <section
       ref={imageRef}
-      className="pt-40 pb-20 px-4 bg-white dark:bg-gray-800 text-black dark:text-white"
+      className="pt-40 pb-20 px-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-black dark:text-white relative overflow-hidden"
     >
-      <div className="container mx-auto text-center">
-        <h1 className="text-5xl md:text-6xl lg:text-[105px] pb-6 gradient-title">
+      {/* Background decorations */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200/30 dark:bg-blue-800/30 rounded-full blur-xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-200/30 dark:bg-purple-800/30 rounded-full blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-pink-200/30 dark:bg-pink-800/30 rounded-full blur-xl animate-pulse delay-500"></div>
+      </div>
+      
+      <div className="container mx-auto text-center relative z-10">
+        <h1 className="text-5xl md:text-6xl lg:text-[105px] pb-6 gradient-title transform transition-all duration-1000 hover:scale-105">
           Optimize Your Financial Decisions
         </h1>
-        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
           An AI-powered financial management platform that helps you track,
-          analyze, and optimize your spending with real-time insights.
+          analyze, and optimize your spending with real-time insights and smart recommendations.
         </p>
-        <div className="flex justify-center space-x-4">
+        <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-12">
           <Link href="/dashboard">
-            <Button size="lg" className="px-8">
-              Get Started
+            <Button size="lg" className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none shadow-2xl hover:shadow-3xl transform transition-all duration-300 hover:scale-110 hover:-translate-y-2 rounded-full font-semibold">
+              Get Started Free
+              <span className="ml-2">🚀</span>
             </Button>
           </Link>
           <Link href="/">
-            <Button size="lg" variant="outline" className="px-8">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 rounded-full font-semibold">
               Watch Demo
+              <span className="ml-2">📺</span>
             </Button>
           </Link>
         </div>
