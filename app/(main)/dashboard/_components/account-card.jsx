@@ -15,9 +15,21 @@ import {
 import Link from "next/link";
 import { updateDefaultAccount } from "@/actions/account";
 import { toast } from "sonner";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 export function AccountCard({ account }) {
-  const { name, type, balance, id, isDefault } = account;
+  const { 
+    name, 
+    type, 
+    balance, 
+    id, 
+    isDefault,
+    displayBalance,
+    displayCurrency,
+    originalBalance,
+    originalCurrency,
+    formattedBalance
+  } = account;
 
   const {
     loading: updateDefaultLoading,
@@ -63,12 +75,24 @@ export function AccountCard({ account }) {
           />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">
-            ${parseFloat(balance).toFixed(2)}
+          <CurrencyDisplay
+            amount={displayBalance || balance}
+            currency={displayCurrency || "USD"}
+            originalAmount={originalBalance !== displayBalance ? originalBalance : null}
+            originalCurrency={originalCurrency}
+            className="text-2xl font-bold"
+            showOriginal={true}
+          />
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-xs text-muted-foreground">
+              {type.charAt(0) + type.slice(1).toLowerCase()} Account
+            </p>
+            {originalCurrency && originalCurrency !== displayCurrency && (
+              <Badge variant="outline" className="text-xs">
+                {originalCurrency}
+              </Badge>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground">
-            {type.charAt(0) + type.slice(1).toLowerCase()} Account
-          </p>
         </CardContent>
         <CardFooter className="flex justify-between text-sm text-muted-foreground">
           <div className="flex items-center">

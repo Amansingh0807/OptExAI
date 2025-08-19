@@ -5,6 +5,8 @@ import { db } from "@/lib/prisma";
 import { request } from "@arcjet/next";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import { convertCurrency, formatCurrency } from "@/lib/currency";
+import { getUserCurrency } from "@/actions/currency";
 
 const serializeTransaction = (obj) => {
   const serialized = { ...obj };
@@ -48,6 +50,68 @@ export async function getUserAccounts() {
     return serializedAccounts;
   } catch (error) {
     console.error(error.message);
+  }
+}
+
+// New function with currency conversion
+export async function getUserAccountsWithCurrency() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    // Get user's preferred currency
+    const { currency: userCurrency } = await getUserCurrency();
+
+    const accounts = await db.account.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: {
+          select: {
+            transactions: true,
+          },
+        },
+      },
+    });
+
+    // Convert balances to user's preferred currency
+    const accountsWithConvertedBalances = await Promise.all(
+      accounts.map(async (account) => {
+        const originalBalance = parseFloat(account.balance);
+        let displayBalance = originalBalance;
+        
+        // Convert if currencies are different
+        if (account.currency !== userCurrency) {
+          displayBalance = await convertCurrency(
+            originalBalance,
+            account.currency,
+            userCurrency
+          );
+        }
+
+        return {
+          ...serializeTransaction(account),
+          originalBalance,
+          originalCurrency: account.currency,
+          displayBalance,
+          displayCurrency: userCurrency,
+          formattedBalance: formatCurrency(displayBalance, userCurrency),
+        };
+      })
+    );
+
+    return accountsWithConvertedBalances;
+  } catch (error) {
+    console.error(error.message);
+    throw error;
   }
 }
 

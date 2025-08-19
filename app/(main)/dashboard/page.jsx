@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getUserAccounts } from "@/actions/dashboard";
+import { getUserAccountsWithCurrency } from "@/actions/dashboard";
 import { getDashboardData } from "@/actions/dashboard";
 import { getCurrentBudget } from "@/actions/budget";
 import { AccountCard } from "./_components/account-card";
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
   const [accounts, transactions] = await Promise.all([
-    getUserAccounts(),
+    getUserAccountsWithCurrency(),
     getDashboardData(),
   ]);
 
