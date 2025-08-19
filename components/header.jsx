@@ -52,15 +52,6 @@ const Header = async () => {
         {/* Action Buttons */}
         <div className="flex items-center space-x-4">
           <SignedIn>
-          <Link
-  href="/saving"
-  className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 transition-all duration-300 hover:scale-105"
->
-  <Button variant="outline" className="flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
-    <PiggyBank size={18} />
-    <span className="hidden md:inline">Saving</span>
-  </Button>
-</Link>
             <Link
               href="/dashboard"
               className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 transition-all duration-300 hover:scale-105"
