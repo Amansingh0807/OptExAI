@@ -74,8 +74,8 @@ export function AccountCard({ account, userCurrency }) {
   }, [error]);
 
   return (
-    <Card className="hover:shadow-md transition-shadow group relative">
-      <Link href={`/account/${id}`}>
+    <Card className="hover:shadow-md transition-shadow group relative cursor-pointer">
+      <Link href={`/account/${id}`} className="cursor-pointer">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium capitalize">
             {name}

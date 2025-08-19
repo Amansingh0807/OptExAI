@@ -171,3 +171,47 @@
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* Cursor pointer for interactive elements */
+button,
+a,
+[role="button"],
+[tabindex="0"],
+.cursor-pointer,
+input[type="checkbox"],
+input[type="radio"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+select,
+.clickable {
+  cursor: pointer !important;
+}
+
+/* Specific UI component cursors */
+.switch,
+.dropdown-trigger,
+.accordion-trigger,
+.dialog-trigger,
+.popover-trigger,
+.tooltip-trigger,
+.sidebar-trigger,
+.menu-trigger {
+  cursor: pointer !important;
+}
+
+/* Card and link cursors */
+.card:hover,
+.account-card:hover,
+.transaction-row:hover,
+[data-clickable]:hover {
+  cursor: pointer !important;
+}
+
+/* Disabled state should show not-allowed cursor */
+button:disabled,
+input:disabled,
+select:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
+}

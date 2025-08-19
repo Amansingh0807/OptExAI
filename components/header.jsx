@@ -24,7 +24,7 @@ const Header = async () => {
   return (
     <header className="fixed top-0 w-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-md z-50 border-b border-gray-200/20 dark:border-gray-700/20 shadow-lg">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="transition-all duration-300 hover:scale-105">
+        <Link href="/" className="transition-all duration-300 hover:scale-105 cursor-pointer">
           <Image
             src={"/logo.png"}
             alt="OptEx Logo"
@@ -37,12 +37,12 @@ const Header = async () => {
         {/* Navigation Links - Different for signed in/out users */}
         <div className="hidden md:flex items-center space-x-8">
           <SignedOut>
-            <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 font-medium">
+            <a href="#features" className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 font-medium cursor-pointer">
               Features
             </a>
             <a
               href="#testimonials"
-              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 font-medium"
+              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:scale-105 font-medium cursor-pointer"
             >
               Testimonials
             </a>
@@ -54,14 +54,14 @@ const Header = async () => {
           <SignedIn>
             <Link
               href="/dashboard"
-              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 transition-all duration-300 hover:scale-105"
+              className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer"
             >
               <Button variant="outline" className="transition-all duration-300 hover:shadow-lg">
                 <LayoutDashboard size={18} />
                 <span className="hidden md:inline">Dashboard</span>
               </Button>
             </Link>
-            <a href="/transaction/create">
+            <a href="/transaction/create" className="cursor-pointer">
               <Button className="flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg">
                 <PenBox size={18} />
                 <span className="hidden md:inline">Add Transaction</span>
