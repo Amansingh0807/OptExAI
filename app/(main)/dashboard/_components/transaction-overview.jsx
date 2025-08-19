@@ -15,6 +15,8 @@ import {
 } from "recharts";
 import { format } from "date-fns";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { formatCurrency } from "@/lib/currency";
 
 import {
   Select,
@@ -36,7 +38,7 @@ const COLORS = [
   "#9FA8DA",
 ];
 
-export function DashboardOverview({ accounts, transactions }) {
+export function DashboardOverview({ accounts, transactions, userCurrency = "USD" }) {
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id
   );
@@ -118,7 +120,7 @@ export function DashboardOverview({ accounts, transactions }) {
                     </div>
                     <div className="flex items-center gap-2 text-red-500">
                       <ArrowDownRight className="mr-1 h-4 w-4" />
-                      ${transaction.amount.toFixed(2)}
+                      <CurrencyDisplay amount={transaction.amount} />
                     </div>
                   </div>
                 ))
@@ -168,7 +170,7 @@ export function DashboardOverview({ accounts, transactions }) {
                     </div>
                     <div className="flex items-center gap-2 text-green-500">
                       <ArrowUpRight className="mr-1 h-4 w-4" />
-                      ${transaction.amount.toFixed(2)}
+                      <CurrencyDisplay amount={transaction.amount} />
                     </div>
                   </div>
                 ))
@@ -202,7 +204,7 @@ export function DashboardOverview({ accounts, transactions }) {
                       outerRadius="80%"
                       fill="#8884d8"
                       dataKey="value"
-                      label={({ name, value }) => `${name}: $${value.toFixed(2)}`}
+                      label={({ name, value }) => `${name}: ${formatCurrency(value, userCurrency)}`}
                     >
                       {chartData.map((entry, index) => (
                         <Cell
@@ -212,7 +214,7 @@ export function DashboardOverview({ accounts, transactions }) {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value) => `$${value.toFixed(2)}`}
+                      formatter={(value) => formatCurrency(value, userCurrency)}
                       contentStyle={{
                         backgroundColor: "hsl(var(--popover))",
                         border: "1px solid hsl(var(--border))",
@@ -245,7 +247,7 @@ export function DashboardOverview({ accounts, transactions }) {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip
-                      formatter={(value) => `$${value.toFixed(2)}`}
+                      formatter={(value) => formatCurrency(value, userCurrency)}
                       contentStyle={{
                         backgroundColor: "hsl(var(--popover))",
                         border: "1px solid hsl(var(--border))",

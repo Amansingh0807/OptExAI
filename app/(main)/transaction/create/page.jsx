@@ -1,4 +1,4 @@
-import { getUserAccounts } from "@/actions/dashboard";
+import { getUserAccountsWithCurrency } from "@/actions/dashboard";
 import { defaultCategories } from "@/data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
 import { getTransaction } from "@/actions/transaction";
@@ -8,7 +8,7 @@ export default async function AddTransactionPage({ searchParams }) {
   // ✅ Await searchParams before accessing its properties
   const editId = (await searchParams)?.edit;
 
-  const accounts = await getUserAccounts();
+  const accounts = await getUserAccountsWithCurrency();
 
   let initialData = null;
   if (editId) {

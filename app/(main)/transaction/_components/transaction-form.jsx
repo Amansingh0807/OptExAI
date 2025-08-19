@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -163,6 +164,9 @@ export function AddTransactionForm({
             placeholder="0.00"
             {...register("amount")}
           />
+          <p className="text-xs text-muted-foreground">
+            Enter amount in the account's original currency. It will be converted to your preferred currency in reports.
+          </p>
           {errors.amount && (
             <p className="text-sm text-red-500">{errors.amount.message}</p>
           )}
@@ -180,7 +184,12 @@ export function AddTransactionForm({
             <SelectContent>
               {accounts.map((account) => (
                 <SelectItem key={account.id} value={account.id}>
-                  {account.name} (${parseFloat(account.balance).toFixed(2)})
+                  <div className="flex items-center justify-between w-full">
+                    <span>{account.name}</span>
+                    <span className="ml-2 text-xs text-muted-foreground">
+                      <CurrencyDisplay amount={parseFloat(account.balance)} />
+                    </span>
+                  </div>
                 </SelectItem>
               ))}
               <CreateAccountDrawer>

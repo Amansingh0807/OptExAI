@@ -45,7 +45,12 @@ export async function getUserAccounts() {
     });
 
     // Serialize accounts before sending to client
-    const serializedAccounts = accounts.map(serializeTransaction);
+    const serializedAccounts = accounts.map((account) => ({
+      ...account,
+      balance: account.balance.toNumber(), // Serialize Decimal to number
+      createdAt: account.createdAt.toISOString(),
+      updatedAt: account.updatedAt.toISOString(),
+    }));
 
     return serializedAccounts;
   } catch (error) {
@@ -98,12 +103,21 @@ export async function getUserAccountsWithCurrency() {
         }
 
         return {
-          ...serializeTransaction(account),
+          id: account.id,
+          name: account.name,
+          type: account.type,
+          balance: originalBalance, // Serialize the Decimal balance
+          isDefault: account.isDefault,
+          userId: account.userId,
+          createdAt: account.createdAt.toISOString(),
+          updatedAt: account.updatedAt.toISOString(),
+          currency: account.currency,
           originalBalance,
           originalCurrency: account.currency,
           displayBalance,
           displayCurrency: userCurrency,
           formattedBalance: formatCurrency(displayBalance, userCurrency),
+          _count: account._count, // Preserve the count
         };
       })
     );
@@ -217,4 +231,61 @@ export async function getDashboardData() {
   });
 
   return transactions.map(serializeTransaction);
+}
+
+export async function getDashboardDataWithCurrency() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+  });
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  try {
+    // Get user's preferred currency
+    const { currency: userCurrency } = await getUserCurrency();
+
+    // Get all user transactions with account information
+    const transactions = await db.transaction.findMany({
+      where: { userId: user.id },
+      orderBy: { date: "desc" },
+      include: {
+        account: true,
+      },
+    });
+
+    // Convert transaction amounts to user's preferred currency
+    const transactionsWithConvertedAmounts = await Promise.all(
+      transactions.map(async (transaction) => {
+        const originalAmount = parseFloat(transaction.amount);
+        let displayAmount = originalAmount;
+        
+        // Convert if currencies are different
+        if (transaction.account.currency !== userCurrency) {
+          displayAmount = await convertCurrency(
+            originalAmount,
+            transaction.account.currency,
+            userCurrency
+          );
+        }
+
+        return {
+          ...serializeTransaction(transaction),
+          amount: displayAmount,
+          originalAmount: originalAmount,
+          originalCurrency: transaction.account.currency,
+          displayCurrency: userCurrency,
+        };
+      })
+    );
+
+    return transactionsWithConvertedAmounts;
+  } catch (error) {
+    console.error("Error in getDashboardDataWithCurrency:", error);
+    throw error;
+  }
 }

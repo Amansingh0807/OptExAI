@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Pencil, Check, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 import {
   Card,
@@ -134,9 +135,12 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail }) {
               <>
                 <CardDescription>
                   {initialBudget
-                    ? `$${currentExpenses.toFixed(
-                        2
-                      )} of $${initialBudget.amount.toFixed(2)} spent`
+                    ? (
+                        <span className="flex items-center gap-1">
+                          <CurrencyDisplay amount={currentExpenses} /> of{" "}
+                          <CurrencyDisplay amount={initialBudget.amount} /> spent
+                        </span>
+                      )
                     : "No budget set"}
                 </CardDescription>
                 <Button

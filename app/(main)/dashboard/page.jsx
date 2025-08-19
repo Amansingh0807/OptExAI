@@ -1,7 +1,8 @@
 import { Suspense } from "react";
-import { getUserAccountsWithCurrency } from "@/actions/dashboard";
-import { getDashboardData } from "@/actions/dashboard";
-import { getCurrentBudget } from "@/actions/budget";
+import { getUserAccountsWithCurrency, getDashboardDataWithCurrency } from "@/actions/dashboard";
+import { getCurrentBudgetWithCurrency } from "@/actions/budget";
+import { getUserCurrency } from "@/actions/currency";
+import { currentUser } from "@clerk/nextjs/server";
 import { AccountCard } from "./_components/account-card";
 import { CreateAccountDrawer } from "@/components/create-account-drawer";
 import { BudgetProgress } from "./_components/budget-progress";
@@ -11,17 +12,19 @@ import { DashboardOverview } from "./_components/transaction-overview";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const [accounts, transactions] = await Promise.all([
+  const [accounts, transactions, userCurrencyData, user] = await Promise.all([
     getUserAccountsWithCurrency(),
-    getDashboardData(),
+    getDashboardDataWithCurrency(),
+    getUserCurrency(),
+    currentUser(),
   ]);
 
   const defaultAccount = accounts?.find((account) => account.isDefault);
 
-  // Get budget for default account
+  // Get budget for default account with currency conversion
   let budgetData = null;
   if (defaultAccount) {
-    budgetData = await getCurrentBudget(defaultAccount.id);
+    budgetData = await getCurrentBudgetWithCurrency(defaultAccount.id);
   }
 
   return (
@@ -30,12 +33,14 @@ export default async function DashboardPage() {
       <BudgetProgress
         initialBudget={budgetData?.budget}
         currentExpenses={budgetData?.currentExpenses || 0}
+        userEmail={user?.emailAddresses?.[0]?.emailAddress}
       />
 
       {/* Dashboard Overview */}
       <DashboardOverview
         accounts={accounts}
         transactions={transactions || []}
+        userCurrency={userCurrencyData.currency}
       />
 
       {/* Accounts Grid */}
