@@ -54,6 +54,7 @@ import { bulkDeleteTransactions } from "@/actions/account";
 import useFetch from "@/hooks/use-fetch";
 import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -64,7 +65,7 @@ const RECURRING_INTERVALS = {
   YEARLY: "Yearly",
 };
 
-export function TransactionTable({ transactions }) {
+export function TransactionTable({ transactions, userCurrency, account }) {
   const [selectedIds, setSelectedIds] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: "date",
@@ -377,8 +378,13 @@ export function TransactionTable({ transactions }) {
                         : "text-green-500"
                     )}
                   >
-                    {transaction.type === "EXPENSE" ? "-" : "+"}$
-                    {transaction.amount.toFixed(2)}
+                    <CurrencyDisplay
+                      amount={transaction.amount}
+                      currency={account?.currency || "USD"}
+                      targetCurrency={userCurrency}
+                      showSign={true}
+                      type={transaction.type}
+                    />
                   </TableCell>
                   <TableCell>
                     {transaction.isRecurring ? (

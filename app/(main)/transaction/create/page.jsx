@@ -1,4 +1,5 @@
-import { getUserAccountsWithCurrency } from "@/actions/dashboard";
+import { getUserAccounts } from "@/actions/dashboard";
+import { getUserCurrency } from "@/actions/currency";
 import { defaultCategories } from "@/data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
 import { getTransaction } from "@/actions/transaction";
@@ -8,7 +9,12 @@ export default async function AddTransactionPage({ searchParams }) {
   // ✅ Await searchParams before accessing its properties
   const editId = (await searchParams)?.edit;
 
-  const accounts = await getUserAccountsWithCurrency();
+  const [accounts, userCurrencyData] = await Promise.all([
+    getUserAccounts(),
+    getUserCurrency(),
+  ]);
+
+  const userCurrency = userCurrencyData.currency;
 
   let initialData = null;
   if (editId) {
@@ -26,6 +32,7 @@ export default async function AddTransactionPage({ searchParams }) {
         categories={defaultCategories}
         editMode={!!editId}
         initialData={initialData}
+        userCurrency={userCurrency}
       />
     </div>
   );

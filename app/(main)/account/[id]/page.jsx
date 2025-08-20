@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { getAccountWithTransactions } from "@/actions/account";
+import { getUserCurrency } from "@/actions/currency";
 import { BarLoader } from "react-spinners";
 import { TransactionTable } from "../_components/transaction-table";
 import { notFound } from "next/navigation";
 import { AccountChart } from "../_components/account-chart";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 // Ensure this is an async server component
 export default async function AccountPage({ params }) {
@@ -14,13 +16,17 @@ export default async function AccountPage({ params }) {
     notFound(); // Handle missing ID gracefully
   }
 
-  const accountData = await getAccountWithTransactions(accountId);
+  const [accountData, userCurrencyData] = await Promise.all([
+    getAccountWithTransactions(accountId),
+    getUserCurrency(),
+  ]);
 
   if (!accountData) {
     notFound();
   }
 
   const { transactions, ...account } = accountData;
+  const userCurrency = userCurrencyData.currency;
 
   return (
     <div className="space-y-8 mb-16 px-5">
@@ -36,7 +42,13 @@ export default async function AccountPage({ params }) {
 
         <div className="text-right pb-2">
           <div className="text-xl sm:text-2xl font-bold">
-            ${parseFloat(account.balance).toFixed(2)}
+            <CurrencyDisplay 
+              amount={parseFloat(account.balance)} 
+              currency={userCurrency}
+              originalAmount={account.currency !== userCurrency ? parseFloat(account.balance) : null}
+              originalCurrency={account.currency}
+              showOriginal={true}
+            />
           </div>
           <p className="text-sm text-muted-foreground">
             {account._count.transactions} Transactions
@@ -46,12 +58,12 @@ export default async function AccountPage({ params }) {
 
       {/* Chart Section */}
       <Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}>
-        <AccountChart transactions={transactions} />
+        <AccountChart transactions={transactions} userCurrency={userCurrency} account={account} />
       </Suspense>
 
       {/* Transactions Table */}
       <Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}>
-        <TransactionTable transactions={transactions} />
+        <TransactionTable transactions={transactions} userCurrency={userCurrency} account={account} />
       </Suspense>
     </div>
   );

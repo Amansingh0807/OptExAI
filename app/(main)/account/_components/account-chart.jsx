@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -20,6 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { convertCurrency } from "@/lib/currency";
 
 const DATE_RANGES = {
   "7D": { label: "Last 7 Days", days: 7 },
@@ -29,8 +31,9 @@ const DATE_RANGES = {
   ALL: { label: "All Time", days: null },
 };
 
-export function AccountChart({ transactions }) {
+export function AccountChart({ transactions, userCurrency, account }) {
   const [dateRange, setDateRange] = useState("1M");
+  const [convertedData, setConvertedData] = useState([]);
 
   const filteredData = useMemo(() => {
     const range = DATE_RANGES[dateRange];
@@ -64,16 +67,41 @@ export function AccountChart({ transactions }) {
     );
   }, [transactions, dateRange]);
 
+  // Convert amounts to user currency
+  useEffect(() => {
+    const convertData = async () => {
+      if (!account?.currency || !userCurrency || account.currency === userCurrency) {
+        setConvertedData(filteredData);
+        return;
+      }
+
+      const converted = await Promise.all(
+        filteredData.map(async (day) => {
+          const convertedIncome = await convertCurrency(day.income, account.currency, userCurrency);
+          const convertedExpense = await convertCurrency(day.expense, account.currency, userCurrency);
+          return {
+            ...day,
+            income: convertedIncome,
+            expense: convertedExpense,
+          };
+        })
+      );
+      setConvertedData(converted);
+    };
+
+    convertData();
+  }, [filteredData, account?.currency, userCurrency]);
+
   // Calculate totals for the selected period
   const totals = useMemo(() => {
-    return filteredData.reduce(
+    return convertedData.reduce(
       (acc, day) => ({
         income: acc.income + day.income,
         expense: acc.expense + day.expense,
       }),
       { income: 0, expense: 0 }
     );
-  }, [filteredData]);
+  }, [convertedData]);
 
   return (
     <Card>
@@ -98,33 +126,47 @@ export function AccountChart({ transactions }) {
         <div className="flex justify-around mb-6 text-sm">
           <div className="text-center">
             <p className="text-muted-foreground">Total Income</p>
-            <p className="text-lg font-bold text-green-500">
-              ${totals.income.toFixed(2)}
-            </p>
+            <div className="text-lg font-bold text-green-500">
+              <CurrencyDisplay
+                amount={totals.income}
+                currency={userCurrency}
+                targetCurrency={userCurrency}
+              />
+            </div>
           </div>
           <div className="text-center">
             <p className="text-muted-foreground">Total Expenses</p>
-            <p className="text-lg font-bold text-red-500">
-              ${totals.expense.toFixed(2)}
-            </p>
+            <div className="text-lg font-bold text-red-500">
+              <CurrencyDisplay
+                amount={totals.expense}
+                currency={userCurrency}
+                targetCurrency={userCurrency}
+              />
+            </div>
           </div>
           <div className="text-center">
             <p className="text-muted-foreground">Net</p>
-            <p
+            <div
               className={`text-lg font-bold ${
                 totals.income - totals.expense >= 0
                   ? "text-green-500"
                   : "text-red-500"
               }`}
             >
-              ${(totals.income - totals.expense).toFixed(2)}
-            </p>
+              <CurrencyDisplay
+                amount={totals.income - totals.expense}
+                currency={userCurrency}
+                targetCurrency={userCurrency}
+                showSign={true}
+                type={totals.income - totals.expense >= 0 ? "INCOME" : "EXPENSE"}
+              />
+            </div>
           </div>
         </div>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={filteredData}
+              data={convertedData}
               margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -138,10 +180,26 @@ export function AccountChart({ transactions }) {
                 fontSize={12}
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => `$${value}`}
+                tickFormatter={(value) => {
+                  const symbol = userCurrency === 'USD' ? '$' : 
+                               userCurrency === 'EUR' ? '€' : 
+                               userCurrency === 'GBP' ? '£' : 
+                               userCurrency === 'JPY' ? '¥' : 
+                               userCurrency === 'INR' ? '₹' : 
+                               userCurrency + ' ';
+                  return `${symbol}${value}`;
+                }}
               />
               <Tooltip
-                formatter={(value) => [`$${value}`, undefined]}
+                formatter={(value) => {
+                  const symbol = userCurrency === 'USD' ? '$' : 
+                               userCurrency === 'EUR' ? '€' : 
+                               userCurrency === 'GBP' ? '£' : 
+                               userCurrency === 'JPY' ? '¥' : 
+                               userCurrency === 'INR' ? '₹' : 
+                               userCurrency + ' ';
+                  return [`${symbol}${value}`, undefined];
+                }}
                 contentStyle={{
                   backgroundColor: "hsl(var(--popover))",
                   border: "1px solid hsl(var(--border))",
