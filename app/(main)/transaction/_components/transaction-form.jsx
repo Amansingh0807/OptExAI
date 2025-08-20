@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { VoiceInput } from "@/components/voice-input";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,6 +107,40 @@ export function AddTransactionForm({
         setValue("category", scannedData.category);
       }
       toast.success("Receipt scanned successfully");
+    }
+  };
+
+  const handleVoiceResult = (voiceData) => {
+    if (voiceData) {
+      // Set amount
+      if (voiceData.amount) {
+        setValue("amount", voiceData.amount.toString());
+      }
+      
+      // Set description
+      if (voiceData.description) {
+        setValue("description", voiceData.description);
+      }
+      
+      // Set category - find matching category in the categories list
+      if (voiceData.category) {
+        const matchingCategory = categories.find(cat => 
+          cat.name.toLowerCase() === voiceData.category.toLowerCase()
+        );
+        if (matchingCategory) {
+          setValue("category", matchingCategory.id);
+        }
+      }
+      
+      // Set date to today (voice input typically for current expenses)
+      setValue("date", new Date());
+      
+      // Default to EXPENSE type for voice input
+      setValue("type", "EXPENSE");
+      
+      toast.success(`Voice input applied: ₹${voiceData.amount} for ${voiceData.description}`, {
+        duration: 4000
+      });
     }
   };
 
@@ -271,6 +306,20 @@ export function AddTransactionForm({
         {errors.description && (
           <p className="text-sm text-red-500">{errors.description.message}</p>
         )}
+      </div>
+
+      {/* Voice Input */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium">Quick Voice Input</label>
+        <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
+          <VoiceInput 
+            onVoiceResult={handleVoiceResult}
+            disabled={transactionLoading}
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            🎤 <strong>Say something like:</strong> "Add 500 rupees for dinner at Domino's" or "200 rupees uber ride"
+          </p>
+        </div>
       </div>
 
       {/* Recurring Toggle */}
