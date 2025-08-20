@@ -23,7 +23,7 @@ OptEx simplifies this by **automating financial tracking**, offering **AI-driven
 8. **UPI Integration & Real-Time Expense Syncing** – Auto-track expenses from **UPI payments** 💳.
 9. **Security & Bot Protection** – Implemented **Arcjet bot detection** 🛡️.
 10. **Email Notifications** – Automated alerts using **Twilio SendGrid** ✉️.
-
+11. **Voice Command** – Automated everything with **Voice controller**🎤.
 ## 🏗️ Tech Stack
 ### **Frontend & Backend**
 - **Next.js (React Framework)** ⚛️
@@ -61,12 +61,21 @@ OptEx simplifies this by **automating financial tracking**, offering **AI-driven
 ```bash
   npm install  # or yarn install
 ```
-3️⃣ Set up environment variables (`.env` file):
+3️⃣ Set up environment variables (EXAMPLE VARIABLES) (`.env` file):
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
-NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
-NEXT_PUBLIC_TWILIO_SENDGRID_KEY=your_sendgrid_api_key
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = TOUR_CLERK_KEY
+CLERK_SECRET_KEY = TOUR_CLERK_KEY
+NEXT_PUBLIC_CLERK_SIGN_IN_URL = example - sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL = example - sign-up
+DATABASE_URL=YOUR_DATABASE_POOL_URL
+DIRECT_URL=YOUR_KEY
+ARCJET_KEY=YOUR_KEY    
+GEMINI_API_KEY = YOUR_KEY
+NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=YOUR_KEY
+SENDGRID_API_KEY=YOUR_KEY
+SENDGRID_FROM_EMAIL= YOUR_MAIL
+NEXT_PUBLIC_PUBLISHABLE_KEY=YOUR_KEY
+STRIPE_SECRET_KEY=YOUR_KEY
 ```
 4️⃣ Run the development server:
 ```bash
