@@ -87,12 +87,12 @@ npm run test
 ---
 
 ## 🌟 Code of Conduct
-By participating, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md). Be respectful, inclusive, and collaborative.
+By participating, you agree to uphold our [Code of Conduct](code_of_conduct.md). Be respectful, inclusive, and collaborative.
 
 ---
 
 ## 📜 License
-By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [MIT License](License.md).
 
 ---
 
