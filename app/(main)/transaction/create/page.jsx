@@ -23,17 +23,30 @@ export default async function AddTransactionPage({ searchParams }) {
   }
 
   return (
-    <div className="max-w-3xl mt-32 mx-auto px-5">
-      <div className="flex justify-center md:justify-normal mt-32 mb-8">
-        <h1 className="text-5xl gradient-title">Add Transaction</h1>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-12">
+        {/* Hero Header */}
+        <div className="text-center mb-8 sm:mb-12 space-y-3 sm:space-y-4">
+          <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 mb-3 sm:mb-4 mt-6 sm:mt-10 text-xs sm:text-sm">
+            <span className="text-xl sm:text-2xl">💰</span>
+            <span className="font-medium text-primary">Smart Transaction Manager</span>
+          </div>
+          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold gradient-title px-2">
+            {editId ? "Edit Transaction" : "Add Transaction"}
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+            Use voice commands, scan receipts, or fill the form manually. Your financial data is processed instantly.
+          </p>
+        </div>
+
+        <AddTransactionForm
+          accounts={accounts}
+          categories={defaultCategories}
+          editMode={!!editId}
+          initialData={initialData}
+          userCurrency={userCurrency}
+        />
       </div>
-      <AddTransactionForm
-        accounts={accounts}
-        categories={defaultCategories}
-        editMode={!!editId}
-        initialData={initialData}
-        userCurrency={userCurrency}
-      />
     </div>
   );
 }
