@@ -541,7 +541,14 @@ export function AddTransactionForm({
               <div className="p-4 rounded-xl bg-background/50 text-center">
                 <div className="text-sm text-muted-foreground mb-1">Amount</div>
                 <div className="text-3xl font-bold gradient-title">
-                  {currentAmount ? `${selectedAccount?.currency || userCurrency} ${parseFloat(currentAmount).toLocaleString()}` : "—"}
+                  {currentAmount ? (
+                    parseFloat(currentAmount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  ) : (
+                    "—"
+                  )}
                 </div>
               </div>
 
