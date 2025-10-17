@@ -150,3 +150,82 @@ export async function updateDefaultAccount(accountId) {
     return { success: false, error: error.message };
   }
 }
+
+export async function deleteAccount(accountId) {
+  try {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+      where: { clerkUserId: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Check if account exists and belongs to user
+    const account = await db.account.findUnique({
+      where: {
+        id: accountId,
+        userId: user.id,
+      },
+      include: {
+        _count: {
+          select: { transactions: true },
+        },
+      },
+    });
+
+    if (!account) {
+      throw new Error("Account not found");
+    }
+
+    // Prevent deleting default account if it's the only one
+    const accountCount = await db.account.count({
+      where: { userId: user.id },
+    });
+
+    if (account.isDefault && accountCount === 1) {
+      throw new Error("Cannot delete the only account");
+    }
+
+    // Delete all transactions associated with this account first
+    await db.transaction.deleteMany({
+      where: {
+        accountId: accountId,
+        userId: user.id,
+      },
+    });
+
+    // If deleting default account, set another account as default
+    if (account.isDefault && accountCount > 1) {
+      const anotherAccount = await db.account.findFirst({
+        where: {
+          userId: user.id,
+          id: { not: accountId },
+        },
+      });
+
+      if (anotherAccount) {
+        await db.account.update({
+          where: { id: anotherAccount.id },
+          data: { isDefault: true },
+        });
+      }
+    }
+
+    // Delete the account
+    await db.account.delete({
+      where: {
+        id: accountId,
+        userId: user.id,
+      },
+    });
+
+    revalidatePath("/dashboard");
+    return { success: true, message: "Account deleted successfully" };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
