@@ -129,7 +129,7 @@ export function AccountChart({ transactions, userCurrency, account }) {
             <div className="text-lg font-bold text-green-500">
               <CurrencyDisplay
                 amount={totals.income}
-                currency={userCurrency}
+                currency={account?.currency || "USD"}
                 targetCurrency={userCurrency}
               />
             </div>
@@ -139,7 +139,7 @@ export function AccountChart({ transactions, userCurrency, account }) {
             <div className="text-lg font-bold text-red-500">
               <CurrencyDisplay
                 amount={totals.expense}
-                currency={userCurrency}
+                currency={account?.currency || "USD"}
                 targetCurrency={userCurrency}
               />
             </div>
@@ -155,7 +155,7 @@ export function AccountChart({ transactions, userCurrency, account }) {
             >
               <CurrencyDisplay
                 amount={totals.income - totals.expense}
-                currency={userCurrency}
+                currency={account?.currency || "USD"}
                 targetCurrency={userCurrency}
                 showSign={true}
                 type={totals.income - totals.expense >= 0 ? "INCOME" : "EXPENSE"}

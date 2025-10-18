@@ -67,14 +67,10 @@ export default async function AccountPage({ params }) {
                 <div className="text-2xl sm:text-3xl font-bold gradient-title">
                   <CurrencyDisplay 
                     amount={parseFloat(account.balance)} 
-    currency={userCurrency}
-  originalAmount={parseFloat(account.balance)}
-  showOriginal={false}
+                    currency={account.currency}
+                    targetCurrency={userCurrency}
                   />
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
-                  in {account.currency}
-                </p>
               </div>
             </div>
           </div>
