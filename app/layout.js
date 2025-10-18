@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
@@ -28,11 +29,7 @@ export default function RootLayout({ children }) {
               <Header />
               <main className="min-h-screen">{children}</main>
               <Toaster richColors />
-              <footer className="bg-black py-6">
-                <div className="container mx-auto px-4 text-center text-white">
-                  <p>© 2025 OptEx | All Rights Reserved.</p>
-                </div>
-              </footer>
+              <Footer />
             </LoadingProvider>
           </ThemeProvider>
         </body>
