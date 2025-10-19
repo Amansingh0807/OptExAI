@@ -9,6 +9,7 @@ import { BudgetProgress } from "./_components/budget-progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
+import { SpendingHeatmap } from "./_components/spending-heatmap";
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
@@ -109,6 +110,9 @@ export default async function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Spending Heatmap */}
+        <SpendingHeatmap transactions={transactions || []} userCurrency={userCurrency} />
       </div>
     </div>
   );
