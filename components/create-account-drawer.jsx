@@ -47,7 +47,7 @@ export function CreateAccountDrawer({ children }) {
       name: "",
       type: "CURRENT",
       balance: "",
-      currency: userCurrency || "USD", // Use navbar currency
+      currency: userCurrency, // Use navbar currency only
       isDefault: false,
     },
   });
@@ -83,7 +83,7 @@ export function CreateAccountDrawer({ children }) {
     // Ensure currency is set to userCurrency
     const accountData = {
       ...data,
-      currency: userCurrency || data.currency || "USD",
+      currency: userCurrency || data.currency,
     };
     console.log("Creating account with data:", accountData);
     await createAccountFn(accountData);
@@ -141,23 +141,39 @@ export function CreateAccountDrawer({ children }) {
                 <label htmlFor="balance" className="text-sm font-medium">
                   Initial Balance
                 </label>
-                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-bold">
-                  {userCurrency || 'USD'}
-                </Badge>
+                {userCurrency && (
+                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-bold">
+                    {userCurrency}
+                  </Badge>
+                )}
               </div>
               <Input id="balance" type="number" step="0.01" placeholder="0.00" {...register("balance")} />
               {errors.balance && <p className="text-sm text-red-500">{errors.balance.message}</p>}
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <span className="text-2xl">💰</span>
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-primary">
-                    Account will be created in {userCurrency || 'USD'}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Change currency from navbar to use different currency
-                  </p>
+              {userCurrency ? (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  <span className="text-2xl">💰</span>
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-primary">
+                      Account will be created in {userCurrency}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Change currency from navbar to use different currency
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                  <span className="text-2xl">⚠️</span>
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+                      No currency selected
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Please select a currency from the navbar before creating an account
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between rounded-lg border p-3">

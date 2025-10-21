@@ -13,6 +13,7 @@ import { VoiceInput } from "@/components/voice-input";
 import { convertCurrency } from "@/lib/currency";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -47,6 +48,8 @@ export function AddTransactionForm({
 
   // State for converted account balances
   const [convertedAccounts, setConvertedAccounts] = useState([]);
+  const [previousAccountCurrency, setPreviousAccountCurrency] = useState(null);
+  const [isConvertingAmount, setIsConvertingAmount] = useState(false);
 
   const {
     register,
@@ -116,17 +119,61 @@ export function AddTransactionForm({
     convertAccountBalances();
   }, [accounts, userCurrency]);
 
+  // Convert amount when account selection changes
+  useEffect(() => {
+    const convertAmountOnAccountChange = async () => {
+      const currentAccountId = watch("accountId");
+      const currentAmount = watch("amount");
+      
+      // Don't do any conversion - amount should always be in userCurrency
+      // Just update the previous currency tracker
+      const currentAccount = accounts?.find(acc => acc.id === currentAccountId);
+      if (currentAccount?.currency) {
+        setPreviousAccountCurrency(currentAccount.currency);
+      }
+    };
+
+    convertAmountOnAccountChange();
+  }, [watch("accountId")]); // Only trigger when account changes
+
   const {
     loading: transactionLoading,
     fn: transactionFn,
     data: transactionResult,
   } = useFetch(editMode ? updateTransaction : createTransaction);
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    // Get the selected account to know its currency
+    const selectedAccount = accounts?.find(acc => acc.id === data.accountId);
+    
+    let finalAmount = parseFloat(data.amount);
+    
+    // If the account currency is different from user currency, convert the amount
+    if (selectedAccount && selectedAccount.currency !== userCurrency) {
+      try {
+        finalAmount = await convertCurrency(
+          parseFloat(data.amount),
+          userCurrency,
+          selectedAccount.currency
+        );
+        console.log(`Converting ${data.amount} ${userCurrency} to ${finalAmount.toFixed(2)} ${selectedAccount.currency}`);
+      } catch (error) {
+        console.error("Error converting currency:", error);
+        toast.error("Failed to convert currency. Using original amount.");
+      }
+    }
+    
     const formData = {
       ...data,
-      amount: parseFloat(data.amount),
+      amount: finalAmount,
     };
+
+    console.log("Creating transaction:", {
+      ...formData,
+      accountCurrency: selectedAccount?.currency,
+      userCurrency: userCurrency,
+      accountName: selectedAccount?.name
+    });
 
     if (editMode) {
       transactionFn(editId, formData);
@@ -266,12 +313,19 @@ export function AddTransactionForm({
                 )}
               </div>
 
-              {/* Amount and Account */}
-              <div className="grid gap-4 sm:gap-6 grid-cols-1 xs:grid-cols-2">
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Amount */}
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">💵</span>
-                    Amount
+                  <label className="text-sm font-semibold flex items-center gap-2 justify-between">
+                    <span className="flex items-center gap-2">
+                      <span className="text-lg">💰</span>
+                      Amount
+                    </span>
+                    {userCurrency && (
+                      <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-bold">
+                        {userCurrency}
+                      </Badge>
+                    )}
                   </label>
                   <Input
                     type="number"
@@ -280,9 +334,19 @@ export function AddTransactionForm({
                     className="h-12 sm:h-14 text-xl sm:text-2xl font-bold border-2 hover:border-primary/50 transition-colors"
                     {...register("amount")}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    💡 Amount in account's currency
-                  </p>
+                  {userCurrency ? (
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                      <span className="text-sm text-primary font-medium">
+                        💡 Enter amount in {userCurrency}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 border border-border">
+                      <span className="text-sm text-muted-foreground">
+                        ℹ️ Select currency from navbar
+                      </span>
+                    </div>
+                  )}
                   {errors.amount && (
                     <p className="text-sm text-red-500">{errors.amount.message}</p>
                   )}
