@@ -6,6 +6,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { LoadingProvider } from "@/components/loading-provider";
+import { CurrencyProvider } from "@/components/currency-provider";
+import { getUserCurrency } from "@/actions/currency";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,7 +16,11 @@ export const metadata = {
   description: "One stop Finance Platform",
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // Get user's currency preference
+  const userCurrencyData = await getUserCurrency();
+  const userCurrency = userCurrencyData?.currency || "USD";
+
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
@@ -25,12 +31,14 @@ export default function RootLayout({ children }) {
         </head>
         <body className={inter.className}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <LoadingProvider>
-              <Header />
-              <main className="min-h-screen">{children}</main>
-              <Toaster richColors />
-              <Footer />
-            </LoadingProvider>
+            <CurrencyProvider currency={userCurrency}>
+              <LoadingProvider>
+                <Header />
+                <main className="min-h-screen">{children}</main>
+                <Toaster richColors />
+                <Footer />
+              </LoadingProvider>
+            </CurrencyProvider>
           </ThemeProvider>
         </body>
       </html>

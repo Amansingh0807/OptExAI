@@ -6,8 +6,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
+import { useCurrency } from "@/components/currency-provider";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Drawer,
   DrawerContent,
@@ -30,6 +32,8 @@ import { accountSchema } from "@/app/lib/schema";
 
 export function CreateAccountDrawer({ children }) {
   const [open, setOpen] = useState(false);
+  const { currency: userCurrency } = useCurrency(); // Get currency from navbar
+  
   const {
     register,
     handleSubmit,
@@ -43,10 +47,30 @@ export function CreateAccountDrawer({ children }) {
       name: "",
       type: "CURRENT",
       balance: "",
-      currency: "USD", // Default currency
+      currency: userCurrency || "USD", // Use navbar currency
       isDefault: false,
     },
   });
+
+  // Update currency when user changes it in navbar
+  useEffect(() => {
+    if (userCurrency) {
+      setValue("currency", userCurrency);
+    }
+  }, [userCurrency, setValue]);
+
+  // Reset form with correct currency when drawer opens
+  useEffect(() => {
+    if (open && userCurrency) {
+      reset({
+        name: "",
+        type: "CURRENT",
+        balance: "",
+        currency: userCurrency,
+        isDefault: false,
+      });
+    }
+  }, [open, userCurrency, reset]);
 
   const {
     loading: createAccountLoading,
@@ -56,7 +80,13 @@ export function CreateAccountDrawer({ children }) {
   } = useFetch(createAccount);
 
   const onSubmit = async (data) => {
-    await createAccountFn(data);
+    // Ensure currency is set to userCurrency
+    const accountData = {
+      ...data,
+      currency: userCurrency || data.currency || "USD",
+    };
+    console.log("Creating account with data:", accountData);
+    await createAccountFn(accountData);
   };
 
   useEffect(() => {
@@ -107,30 +137,27 @@ export function CreateAccountDrawer({ children }) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="balance" className="text-sm font-medium">
-                Initial Balance
-              </label>
+              <div className="flex items-center justify-between">
+                <label htmlFor="balance" className="text-sm font-medium">
+                  Initial Balance
+                </label>
+                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 font-bold">
+                  {userCurrency || 'USD'}
+                </Badge>
+              </div>
               <Input id="balance" type="number" step="0.01" placeholder="0.00" {...register("balance")} />
               {errors.balance && <p className="text-sm text-red-500">{errors.balance.message}</p>}
-            </div>
-
-            {/* Currency Selection */}
-            <div className="space-y-2">
-              <label htmlFor="currency" className="text-sm font-medium">
-                Select Currency
-              </label>
-              <Select onValueChange={(value) => setValue("currency", value)} defaultValue={watch("currency")}>
-                <SelectTrigger id="currency">
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD ($)</SelectItem>
-                  <SelectItem value="INR">INR (₹)</SelectItem>
-                  <SelectItem value="EUR">EUR (€)</SelectItem>
-                  <SelectItem value="GBP">GBP (£)</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.currency && <p className="text-sm text-red-500">{errors.currency.message}</p>}
+              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
+                <span className="text-2xl">💰</span>
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-primary">
+                    Account will be created in {userCurrency || 'USD'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Change currency from navbar to use different currency
+                  </p>
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center justify-between rounded-lg border p-3">

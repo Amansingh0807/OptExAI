@@ -1,8 +1,16 @@
 "use client";
-import React from "react";
+import React, { createContext, useContext } from "react";
 import { CurrencySelector } from "./CurrencySelector";
 import { updateUserCurrency } from "@/actions/currency";
 import { useRouter } from "next/navigation";
+
+// Create Currency Context
+const CurrencyContext = createContext({ currency: "USD" });
+
+// Hook to use currency
+export function useCurrency() {
+  return useContext(CurrencyContext);
+}
 
 export function CurrencyWrapper({ currentCurrency }) {
   const router = useRouter();
@@ -22,9 +30,11 @@ export function CurrencyWrapper({ currentCurrency }) {
   };
 
   return (
-    <CurrencySelector 
-      currentCurrency={currentCurrency} 
-      onCurrencyChange={handleCurrencyChange}
-    />
+    <CurrencyContext.Provider value={{ currency: currentCurrency }}>
+      <CurrencySelector 
+        currentCurrency={currentCurrency} 
+        onCurrencyChange={handleCurrencyChange}
+      />
+    </CurrencyContext.Provider>
   );
 }
