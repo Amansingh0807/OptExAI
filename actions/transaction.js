@@ -65,6 +65,17 @@ export async function createTransaction(data) {
       throw new Error("Account not found");
     }
 
+    // ✅ Validate sufficient balance for EXPENSE transactions
+    if (data.type === "EXPENSE") {
+      const currentBalance = account.balance.toNumber();
+      
+      if (currentBalance < data.amount) {
+        throw new Error(
+          `Insufficient balance! Your account balance is ${currentBalance.toFixed(2)} ${account.currency}, but you're trying to spend ${data.amount.toFixed(2)} ${account.currency}. Please add funds or reduce the transaction amount.`
+        );
+      }
+    }
+
     // Calculate new balance
     const balanceChange = data.type === "EXPENSE" ? -data.amount : data.amount;
     const newBalance = account.balance.toNumber() + balanceChange;
@@ -155,6 +166,21 @@ export async function updateTransaction(id, data) {
       data.type === "EXPENSE" ? -data.amount : data.amount;
 
     const netBalanceChange = newBalanceChange - oldBalanceChange;
+    
+    // ✅ Validate sufficient balance for updated EXPENSE transactions
+    if (data.type === "EXPENSE") {
+      const currentBalance = originalTransaction.account.balance.toNumber();
+      const balanceAfterChange = currentBalance + netBalanceChange;
+      
+      if (balanceAfterChange < 0) {
+        const requiredBalance = data.amount;
+        const availableBalance = currentBalance + (originalTransaction.type === "EXPENSE" ? originalTransaction.amount.toNumber() : 0);
+        
+        throw new Error(
+          `Insufficient balance! Available balance: ${availableBalance.toFixed(2)} ${originalTransaction.account.currency}, but you're trying to spend ${requiredBalance.toFixed(2)} ${originalTransaction.account.currency}.`
+        );
+      }
+    }
 
     // Update transaction and account balance in a transaction
     const transaction = await db.$transaction(async (tx) => {

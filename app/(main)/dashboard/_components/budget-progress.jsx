@@ -122,6 +122,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     const sendBudgetAlert = async () => {
       // Only send if budget exists and is >= 90% used
       if (!initialBudget || percentUsed < 90) {
+        isSendingEmail.current = false;
         return;
       }
 
@@ -137,23 +138,15 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
       const lastAlert = initialBudget.lastAlertSent 
         ? new Date(initialBudget.lastAlertSent) 
         : null;
-      
-      const budgetUpdatedAt = initialBudget.updatedAt 
-        ? new Date(initialBudget.updatedAt)
-        : null;
 
-      // Check if budget was updated AFTER last alert was sent
-      const budgetChangedAfterLastAlert = budgetUpdatedAt && lastAlert 
-        ? budgetUpdatedAt > lastAlert
-        : !lastAlert; // If no last alert and no update, don't send
-
-      // Only send if budget changed OR it's been more than 24 hours since last alert
-      if (lastAlert && !budgetChangedAfterLastAlert) {
+      // If alert was sent in the last 24 hours, don't send again
+      if (lastAlert) {
         const hoursSinceLastAlert = (now - lastAlert) / (1000 * 60 * 60);
         
         if (hoursSinceLastAlert < 24) {
-          console.log(`Budget alert already sent ${hoursSinceLastAlert.toFixed(1)} hours ago.`);
+          console.log(`⏭️ Budget alert already sent ${hoursSinceLastAlert.toFixed(1)} hours ago. Skipping.`);
           setEmailSent(true);
+          isSendingEmail.current = false;
           return;
         }
       }
