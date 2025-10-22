@@ -22,7 +22,7 @@ OptEx simplifies this by **automating financial tracking**, offering **AI-driven
 7. **Automated Reports & ITR Assistance** – Generate **tax-ready financial summaries** 📝.
 8. **UPI Integration & Real-Time Expense Syncing** – Auto-track expenses from **UPI payments** 💳.
 9. **Security & Bot Protection** – Implemented **Arcjet bot detection** 🛡️.
-10. **Email Notifications** – Automated alerts using **Twilio SendGrid** ✉️.
+10. **Email Notifications** – Automated alerts using **EmailJS** ✉️.
 11. **Voice Command** – Automated everything with **Voice controller**🎤.
 ## 🏗️ Tech Stack
 ### **Frontend & Backend**
@@ -36,7 +36,7 @@ OptEx simplifies this by **automating financial tracking**, offering **AI-driven
 
 ### **AI & Automation**
 - **Google Gemini API** 🤖 (for AI-powered expense categorization & recommendations)
-- **Twilio SendGrid** 📩 (for automated email alerts)
+- **EmailJS** 📩 (for automated email alerts) Earlier It was on SendGrid
 - **Arcjet** 🔒 (for bot detection & security)
 
 ## 🎯 Target Audience
@@ -72,8 +72,9 @@ DIRECT_URL=YOUR_KEY
 ARCJET_KEY=YOUR_KEY    
 GEMINI_API_KEY = YOUR_KEY
 NEXT_PUBLIC_EXCHANGE_RATE_API_KEY=YOUR_KEY
-SENDGRID_API_KEY=YOUR_KEY
-SENDGRID_FROM_EMAIL= YOUR_MAIL
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=YOUR_SERVICE_ID
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=YOUR_TEMPLATE_ID
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=YOUR_PUBLIC_KEY
 NEXT_PUBLIC_PUBLISHABLE_KEY=YOUR_KEY
 STRIPE_SECRET_KEY=YOUR_KEY
 ```

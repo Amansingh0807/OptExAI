@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Pencil, Check, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { convertCurrency } from "@/lib/currency";
+import emailjs from '@emailjs/browser';
 
 import {
   Card,
@@ -20,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { updateBudget } from "@/actions/budget";
 
-export function BudgetProgress({ initialBudget, currentExpenses, userEmail, userCurrency = "USD" }) {
+export function BudgetProgress({ initialBudget, currentExpenses, userEmail, userName, userCurrency = "USD" }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
@@ -29,6 +30,8 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
   const [budgetAmount, setBudgetAmount] = useState(initialBudget?.amount || 0);
   const [expenses, setExpenses] = useState(currentExpenses || 0);
   const [previousCurrency, setPreviousCurrency] = useState(userCurrency);
+  const [lastBudgetUpdate, setLastBudgetUpdate] = useState(initialBudget?.updatedAt); // Track budget changes
+  const isSendingEmail = useRef(false); // Prevent concurrent email sends
 
   const {
     loading: isLoading,
@@ -101,6 +104,10 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     if (updatedBudget?.success) {
       setIsEditing(false);
       toast.success("Budget updated successfully");
+      // Reset email flag when budget is updated so new alert can be sent
+      setEmailSent(false);
+      setLastBudgetUpdate(new Date());
+      console.log("Budget updated - email alert reset. Will send new alert if spending exceeds 90%");
     }
   }, [updatedBudget]);
 
@@ -110,7 +117,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     }
   }, [error]);
 
-  // ✅ Fetch API to send an email (instead of directly importing sendEmail)
+  // ✅ Send email using EmailJS from client-side - ONCE per budget update
   useEffect(() => {
     const sendBudgetAlert = async () => {
       // Only send if budget exists and is >= 90% used
@@ -118,61 +125,97 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
         return;
       }
 
-      // Check if alert was already sent this month
+      // Don't send if already sent in this session
+      if (emailSent || isSendingEmail.current) {
+        return;
+      }
+
+      // Lock to prevent concurrent sends
+      isSendingEmail.current = true;
+
       const now = new Date();
       const lastAlert = initialBudget.lastAlertSent 
         ? new Date(initialBudget.lastAlertSent) 
         : null;
+      
+      const budgetUpdatedAt = initialBudget.updatedAt 
+        ? new Date(initialBudget.updatedAt)
+        : null;
 
-      // If alert was sent this month, don't send again
-      if (lastAlert) {
-        const isSameMonth = 
-          lastAlert.getMonth() === now.getMonth() &&
-          lastAlert.getFullYear() === now.getFullYear();
+      // Check if budget was updated AFTER last alert was sent
+      const budgetChangedAfterLastAlert = budgetUpdatedAt && lastAlert 
+        ? budgetUpdatedAt > lastAlert
+        : !lastAlert; // If no last alert and no update, don't send
+
+      // Only send if budget changed OR it's been more than 24 hours since last alert
+      if (lastAlert && !budgetChangedAfterLastAlert) {
+        const hoursSinceLastAlert = (now - lastAlert) / (1000 * 60 * 60);
         
-        if (isSameMonth) {
-          console.log("Budget alert already sent this month");
+        if (hoursSinceLastAlert < 24) {
+          console.log(`Budget alert already sent ${hoursSinceLastAlert.toFixed(1)} hours ago.`);
           setEmailSent(true);
           return;
         }
       }
 
-      // Don't send if already sent in this session
-      if (emailSent) {
-        return;
-      }
-
       try {
-        const response = await fetch("/api/sendEmail", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: userEmail,
-            subject: "⚠️ Budget Limit Alert!",
-            message: `Warning: You have used ${percentUsed.toFixed(1)}% of your budget! Please manage your expenses accordingly.`,
-            isBudgetAlert: true, // Flag to update lastAlertSent
-          }),
-        });
-
-        const data = await response.json();
+        const monthName = now.toLocaleString('default', { month: 'long' });
         
-        if (data.success) {
+        // Initialize EmailJS with your public key
+        emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY);
+
+        // Prepare template parameters - including recipient email
+        const templateParams = {
+          to_email: userEmail, // Recipient email address
+          to_name: userName || userEmail.split("@")[0],
+          user_name: userName || userEmail.split("@")[0],
+          spending_percentage: percentUsed.toFixed(1),
+          month: monthName,
+          current_spent: expenses.toFixed(2),
+          budget_limit: budgetAmount.toFixed(2),
+          currency: userCurrency,
+          reply_to: userEmail, // Reply-to address
+        };
+
+        console.log("📧 Sending ONE budget alert email:", templateParams);
+
+        // Send email using EmailJS client-side SDK
+        const result = await emailjs.send(
+          process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+          process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+          templateParams,
+          process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY // Public key as 4th parameter
+        );
+
+        if (result.status === 200) {
+          console.log("✅ Budget alert email sent successfully!");
           toast.success("Budget alert email sent!");
           setEmailSent(true);
-        } else {
-          throw new Error(data.error || "Failed to send email");
+
+          // Update lastAlertSent in database via API
+          await fetch("/api/updateBudgetAlert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ updateAlert: true }),
+          });
         }
       } catch (err) {
-        console.error("Email Error:", err);
-        // Don't show error toast to avoid annoying users if SendGrid limit reached
+        console.error("EmailJS Error Details:", {
+          error: err,
+          message: err.text || err.message,
+          status: err.status,
+        });
+        // Mark as sent to prevent retries
+        setEmailSent(true);
         console.log("Skipping budget alert email due to error");
+      } finally {
+        // Unlock after send attempt
+        isSendingEmail.current = false;
       }
     };
 
     sendBudgetAlert();
-  }, [percentUsed, emailSent, userEmail, initialBudget]);
+  }, [initialBudget?.id, initialBudget?.updatedAt]); // Only run when budget changes
 
   return (
     <Card>

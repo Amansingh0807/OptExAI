@@ -51,6 +51,7 @@ export default async function DashboardPage() {
           initialBudget={budgetData?.budget}
           currentExpenses={budgetData?.currentExpenses || 0}
           userEmail={user?.emailAddresses?.[0]?.emailAddress}
+          userName={user?.firstName || user?.username || 'User'}
           userCurrency={userCurrency}
         />
 
