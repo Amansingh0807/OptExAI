@@ -17,6 +17,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { updateBudget } from "@/actions/budget";
 
 export function BudgetProgress({ initialBudget, currentExpenses, userEmail, userCurrency = "USD" }) {
@@ -25,8 +26,9 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     initialBudget?.amount?.toString() || ""
   );
   const [emailSent, setEmailSent] = useState(false); // Prevent duplicate emails
-  const [convertedBudgetAmount, setConvertedBudgetAmount] = useState(initialBudget?.amount || 0);
-  const [convertedCurrentExpenses, setConvertedCurrentExpenses] = useState(currentExpenses || 0);
+  const [budgetAmount, setBudgetAmount] = useState(initialBudget?.amount || 0);
+  const [expenses, setExpenses] = useState(currentExpenses || 0);
+  const [previousCurrency, setPreviousCurrency] = useState(userCurrency);
 
   const {
     loading: isLoading,
@@ -35,33 +37,48 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     error,
   } = useFetch(updateBudget);
 
-  const percentUsed = convertedBudgetAmount
-    ? (convertedCurrentExpenses / convertedBudgetAmount) * 100
+  const percentUsed = budgetAmount
+    ? (expenses / budgetAmount) * 100
     : 0;
 
-  // Handle currency conversion when userCurrency changes
+  // Convert budget when user changes currency
   useEffect(() => {
-    const convertAmounts = async () => {
-      if (initialBudget?.amount) {
-        // Assuming budget is stored in USD by default, convert to user's currency
+    const convertBudgetOnCurrencyChange = async () => {
+      if (!initialBudget?.amount) {
+        setBudgetAmount(0);
+        setExpenses(currentExpenses);
+        setPreviousCurrency(userCurrency);
+        return;
+      }
+
+      // If currency changed, convert the budget amount
+      if (previousCurrency && previousCurrency !== userCurrency) {
         try {
-          const convertedBudget = await convertCurrency(initialBudget.amount, "USD", userCurrency);
-          const convertedExpenses = await convertCurrency(currentExpenses, "USD", userCurrency);
-          setConvertedBudgetAmount(convertedBudget);
-          setConvertedCurrentExpenses(convertedExpenses);
+          const convertedBudget = await convertCurrency(
+            budgetAmount,
+            previousCurrency,
+            userCurrency
+          );
+          
+          setBudgetAmount(convertedBudget);
+          setNewBudget(convertedBudget.toFixed(2));
+          
+          console.log(`Budget converted from ${previousCurrency} to ${userCurrency}: ${budgetAmount} → ${convertedBudget.toFixed(2)}`);
         } catch (error) {
           console.error("Currency conversion error:", error);
-          // Fallback to original amounts
-          setConvertedBudgetAmount(initialBudget.amount);
-          setConvertedCurrentExpenses(currentExpenses);
+          toast.error("Failed to convert budget currency");
         }
       } else {
-        setConvertedBudgetAmount(0);
-        setConvertedCurrentExpenses(currentExpenses);
+        // Initial load - no conversion needed
+        setBudgetAmount(initialBudget.amount);
       }
+
+      // Expenses are already in user's currency from backend
+      setExpenses(currentExpenses);
+      setPreviousCurrency(userCurrency);
     };
 
-    convertAmounts();
+    convertBudgetOnCurrencyChange();
   }, [userCurrency, initialBudget?.amount, currentExpenses]);
 
   const handleUpdateBudget = async () => {
@@ -95,33 +112,67 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
 
   // ✅ Fetch API to send an email (instead of directly importing sendEmail)
   useEffect(() => {
-    if (percentUsed >= 90 && !emailSent) {
-      fetch("/api/sendEmail", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: "user", 
-          subject: "⚠️ Budget Limit Alert!",
-          message: `Warning: You have used ${percentUsed.toFixed(1)}% of your budget! Please manage your expenses accordingly.`,
-        }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            toast.success("Budget alert email sent!");
-            setEmailSent(true);
-          } else {
-            throw new Error(data.error);
-          }
-        })
-        .catch((err) => {
-          console.error("Email Error:", err);
-          toast.error("Failed to send budget alert email");
+    const sendBudgetAlert = async () => {
+      // Only send if budget exists and is >= 90% used
+      if (!initialBudget || percentUsed < 90) {
+        return;
+      }
+
+      // Check if alert was already sent this month
+      const now = new Date();
+      const lastAlert = initialBudget.lastAlertSent 
+        ? new Date(initialBudget.lastAlertSent) 
+        : null;
+
+      // If alert was sent this month, don't send again
+      if (lastAlert) {
+        const isSameMonth = 
+          lastAlert.getMonth() === now.getMonth() &&
+          lastAlert.getFullYear() === now.getFullYear();
+        
+        if (isSameMonth) {
+          console.log("Budget alert already sent this month");
+          setEmailSent(true);
+          return;
+        }
+      }
+
+      // Don't send if already sent in this session
+      if (emailSent) {
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/sendEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: userEmail,
+            subject: "⚠️ Budget Limit Alert!",
+            message: `Warning: You have used ${percentUsed.toFixed(1)}% of your budget! Please manage your expenses accordingly.`,
+            isBudgetAlert: true, // Flag to update lastAlertSent
+          }),
         });
-    }
-  }, [percentUsed, emailSent, userEmail]);
+
+        const data = await response.json();
+        
+        if (data.success) {
+          toast.success("Budget alert email sent!");
+          setEmailSent(true);
+        } else {
+          throw new Error(data.error || "Failed to send email");
+        }
+      } catch (err) {
+        console.error("Email Error:", err);
+        // Don't show error toast to avoid annoying users if SendGrid limit reached
+        console.log("Skipping budget alert email due to error");
+      }
+    };
+
+    sendBudgetAlert();
+  }, [percentUsed, emailSent, userEmail, initialBudget]);
 
   return (
     <Card>
@@ -133,15 +184,20 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
           <div className="flex items-center gap-2 mt-1">
             {isEditing ? (
               <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  value={newBudget}
-                  onChange={(e) => setNewBudget(e.target.value)}
-                  className="w-32"
-                  placeholder="Enter amount"
-                  autoFocus
-                  disabled={isLoading}
-                />
+                <div className="flex items-center gap-1.5">
+                  <Input
+                    type="number"
+                    value={newBudget}
+                    onChange={(e) => setNewBudget(e.target.value)}
+                    className="w-32"
+                    placeholder="Enter amount"
+                    autoFocus
+                    disabled={isLoading}
+                  />
+                  <Badge variant="secondary" className="text-xs">
+                    {userCurrency}
+                  </Badge>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -165,8 +221,8 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
                   {initialBudget
                     ? (
                         <span className="flex items-center gap-1">
-                          <CurrencyDisplay amount={convertedCurrentExpenses} currency={userCurrency} /> of{" "}
-                          <CurrencyDisplay amount={convertedBudgetAmount} currency={userCurrency} /> spent
+                          <CurrencyDisplay amount={expenses} currency={userCurrency} /> of{" "}
+                          <CurrencyDisplay amount={budgetAmount} currency={userCurrency} /> spent
                         </span>
                       )
                     : "No budget set"}

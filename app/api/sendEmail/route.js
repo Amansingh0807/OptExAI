@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import sendgrid from "@sendgrid/mail";
+import { db } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 sendgrid.setApiKey(process.env.SENDGRID_API_KEY); // Set API Key
 
 export async function POST(req) {
   try {
-    const { email, subject, message } = await req.json();
+    const { email, subject, message, isBudgetAlert } = await req.json();
 
     if (!email || !subject || !message) {
       return NextResponse.json(
@@ -21,6 +23,23 @@ export async function POST(req) {
       subject,
       text: message,
     });
+
+    // ✅ If this is a budget alert, update lastAlertSent timestamp
+    if (isBudgetAlert) {
+      const { userId } = await auth();
+      if (userId) {
+        const user = await db.user.findUnique({
+          where: { clerkUserId: userId },
+        });
+
+        if (user) {
+          await db.budget.updateMany({
+            where: { userId: user.id },
+            data: { lastAlertSent: new Date() },
+          });
+        }
+      }
+    }
 
     // ✅ Return JSON response
     return NextResponse.json(

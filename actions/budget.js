@@ -38,7 +38,12 @@ export async function getCurrentBudget(accountId) {
       0
     );
 
-    const expenses = await db.transaction.aggregate({
+    // Get user's preferred currency
+    const userCurrencyData = await getUserCurrency();
+    const userCurrency = userCurrencyData?.currency || "USD";
+
+    // Get all expense transactions with their account information
+    const expenseTransactions = await db.transaction.findMany({
       where: {
         userId: user.id,
         type: "EXPENSE",
@@ -48,16 +53,38 @@ export async function getCurrentBudget(accountId) {
         },
         accountId,
       },
-      _sum: {
-        amount: true,
+      include: {
+        account: {
+          select: {
+            currency: true,
+          },
+        },
       },
     });
 
+    // Convert each expense to user's currency and sum them
+    let totalExpensesInUserCurrency = 0;
+    for (const transaction of expenseTransactions) {
+      const transactionAmount = transaction.amount.toNumber();
+      const accountCurrency = transaction.account.currency;
+
+      if (accountCurrency === userCurrency) {
+        // No conversion needed
+        totalExpensesInUserCurrency += transactionAmount;
+      } else {
+        // Convert from account currency to user currency
+        const convertedAmount = await convertCurrency(
+          transactionAmount,
+          accountCurrency,
+          userCurrency
+        );
+        totalExpensesInUserCurrency += convertedAmount;
+      }
+    }
+
     return {
       budget: budget ? { ...budget, amount: budget.amount.toNumber() } : null,
-      currentExpenses: expenses._sum.amount
-        ? expenses._sum.amount.toNumber()
-        : 0,
+      currentExpenses: totalExpensesInUserCurrency,
     };
   } catch (error) {
     console.error("Error fetching budget:", error);
