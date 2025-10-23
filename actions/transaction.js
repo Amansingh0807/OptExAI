@@ -14,6 +14,62 @@ const serializeAmount = (obj) => ({
   amount: obj.amount.toNumber(),
 });
 
+// ✅ AI-Powered Category Detection
+export async function detectCategoryFromDescription(description, type = "EXPENSE") {
+  try {
+    if (!description || description.trim().length < 3) {
+      return null;
+    }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const availableCategories = type === "EXPENSE" 
+      ? [
+          "housing", "transportation", "groceries", "utilities", "entertainment",
+          "food", "shopping", "healthcare", "education", "personal", "travel",
+          "insurance", "gifts", "bills", "other-expense"
+        ]
+      : [
+          "salary", "freelance", "investments", "business", "rental", "other-income"
+        ];
+
+    const prompt = `You are a financial assistant. Analyze the following transaction description and determine the most appropriate category.
+
+Transaction Type: ${type}
+Description: "${description}"
+
+Available Categories: ${availableCategories.join(", ")}
+
+Rules:
+- "food" is for restaurants, dining out, food delivery
+- "groceries" is for supermarket shopping, grocery stores
+- "shopping" is for general retail, clothing, electronics
+- "utilities" is for electricity, water, internet, phone bills
+- "transportation" is for fuel, uber, taxi, public transport
+- "entertainment" is for movies, games, streaming services
+- "healthcare" is for medical, pharmacy, hospital
+- "housing" is for rent, mortgage
+- "bills" is for bank fees, service charges
+
+Respond with ONLY the category ID from the available categories. No explanation, just the category ID.`;
+
+    const result = await model.generateContent(prompt);
+    const response = result.response.text().trim().toLowerCase();
+    
+    // Validate the response is a valid category
+    if (availableCategories.includes(response)) {
+      console.log(`🤖 AI detected category: ${response} for "${description}"`);
+      return response;
+    }
+
+    console.log(`⚠️ AI returned invalid category: ${response}`);
+    return null;
+  } catch (error) {
+    console.error("Error detecting category:", error);
+    return null;
+  }
+}
+
 // Create Transaction
 export async function createTransaction(data) {
   try {
@@ -76,6 +132,18 @@ export async function createTransaction(data) {
       }
     }
 
+    // ✅ AI-Powered Auto Category Detection
+    let finalCategory = data.category;
+    
+    // If no category provided or category is "other", try to detect from description
+    if ((!data.category || data.category === "other-expense" || data.category === "other-income") && data.description) {
+      const detectedCategory = await detectCategoryFromDescription(data.description, data.type);
+      if (detectedCategory) {
+        finalCategory = detectedCategory;
+        console.log(`✨ Auto-detected category: ${detectedCategory} for "${data.description}"`);
+      }
+    }
+
     // Calculate new balance
     const balanceChange = data.type === "EXPENSE" ? -data.amount : data.amount;
     const newBalance = account.balance.toNumber() + balanceChange;
@@ -85,6 +153,7 @@ export async function createTransaction(data) {
       const newTransaction = await tx.transaction.create({
         data: {
           ...data,
+          category: finalCategory, // Use AI-detected or original category
           userId: user.id,
           nextRecurringDate:
             data.isRecurring && data.recurringInterval

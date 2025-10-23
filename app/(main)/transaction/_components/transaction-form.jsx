@@ -31,7 +31,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { CreateAccountDrawer } from "@/components/create-account-drawer";
 import { cn } from "@/lib/utils";
-import { createTransaction, updateTransaction } from "@/actions/transaction";
+import { createTransaction, updateTransaction, detectCategoryFromDescription } from "@/actions/transaction";
 import { transactionSchema } from "@/app/lib/schema";
 import { ReceiptScanner } from "./recipt-scanner";
 
@@ -49,6 +49,7 @@ export function AddTransactionForm({
   // State for converted account balances
   const [convertedAccounts, setConvertedAccounts] = useState([]);
   const [previousAccountCurrency, setPreviousAccountCurrency] = useState(null);
+  const [isDetectingCategory, setIsDetectingCategory] = useState(false);
   const [isConvertingAmount, setIsConvertingAmount] = useState(false);
 
   const {
@@ -191,8 +192,13 @@ export function AddTransactionForm({
       }
       if (scannedData.category) {
         setValue("category", scannedData.category);
+        toast.success(`Receipt scanned! AI detected category: ${scannedData.category}`, {
+          duration: 4000,
+          icon: "🤖"
+        });
+      } else {
+        toast.success("Receipt scanned successfully");
       }
-      toast.success("Receipt scanned successfully");
     }
   };
 
@@ -230,6 +236,38 @@ export function AddTransactionForm({
     }
   };
 
+  // ✨ AI Category Suggestion Handler
+  const handleSuggestCategory = async () => {
+    const description = watch("description");
+    const transactionType = watch("type");
+    
+    if (!description || description.trim().length < 3) {
+      toast.error("Please enter a description first");
+      return;
+    }
+
+    setIsDetectingCategory(true);
+    
+    try {
+      const suggestedCategory = await detectCategoryFromDescription(description, transactionType);
+      
+      if (suggestedCategory) {
+        setValue("category", suggestedCategory);
+        const categoryName = categories.find(c => c.id === suggestedCategory)?.name || suggestedCategory;
+        toast.success(`🤖 AI suggests: ${categoryName}`, {
+          duration: 3000,
+        });
+      } else {
+        toast.info("AI couldn't determine a category. Please select manually.");
+      }
+    } catch (error) {
+      console.error("Error suggesting category:", error);
+      toast.error("Failed to suggest category");
+    } finally {
+      setIsDetectingCategory(false);
+    }
+  };
+
   useEffect(() => {
     if (transactionResult?.success && !transactionLoading) {
       toast.success(
@@ -245,6 +283,51 @@ export function AddTransactionForm({
   const type = watch("type");
   const isRecurring = watch("isRecurring");
   const date = watch("date");
+  const currentDescription = watch("description");
+  const currentCategory = watch("category");
+
+  // ✨ Auto-detect category when description changes (with debounce)
+  useEffect(() => {
+    // Don't auto-detect if:
+    // 1. No description
+    // 2. Description too short
+    // 3. Category already manually selected (not "other")
+    // 4. In edit mode with existing category
+    if (!currentDescription || currentDescription.trim().length < 5) {
+      return;
+    }
+
+    // Skip if user already selected a specific category (not "other")
+    if (currentCategory && currentCategory !== "other-expense" && currentCategory !== "other-income") {
+      return;
+    }
+
+    // Debounce: wait for user to stop typing
+    const timeoutId = setTimeout(async () => {
+      setIsDetectingCategory(true);
+      
+      try {
+        const suggestedCategory = await detectCategoryFromDescription(currentDescription, type);
+        
+        if (suggestedCategory) {
+          setValue("category", suggestedCategory);
+          const categoryName = categories.find(c => c.id === suggestedCategory)?.name || suggestedCategory;
+          console.log(`🤖 Auto-detected category: ${categoryName} for "${currentDescription}"`);
+          
+          // Show subtle toast (not too intrusive)
+          toast.success(`🤖 Category auto-detected: ${categoryName}`, {
+            duration: 2000,
+          });
+        }
+      } catch (error) {
+        console.error("Auto-detect category error:", error);
+      } finally {
+        setIsDetectingCategory(false);
+      }
+    }, 1500); // Wait 1.5 seconds after user stops typing
+
+    return () => clearTimeout(timeoutId);
+  }, [currentDescription, type]); // Only trigger on description or type change
 
   const filteredCategories = categories.filter(
     (category) => category.type === type
@@ -255,8 +338,6 @@ export function AddTransactionForm({
   // Get current form values for preview
   const currentAmount = watch("amount");
   const currentAccountId = watch("accountId");
-  const currentCategory = watch("category");
-  const currentDescription = watch("description");
   
   const selectedAccount = accountsToShow.find(acc => acc.id === currentAccountId);
   const selectedCategory = filteredCategories.find(cat => cat.id === currentCategory);
@@ -399,10 +480,38 @@ export function AddTransactionForm({
 
               {/* Category */}
               <div className="space-y-2">
-                <label className="text-sm font-semibold flex items-center gap-2">
-                  <span className="text-lg">🏷️</span>
-                  Category
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-semibold flex items-center gap-2">
+                    <span className="text-lg">🏷️</span>
+                    Category
+                    {isDetectingCategory && (
+                      <span className="text-xs text-purple-500 animate-pulse">
+                        (Auto-detecting...)
+                      </span>
+                    )}
+                  </label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSuggestCategory}
+                    disabled={isDetectingCategory || transactionLoading || !currentDescription}
+                    className="h-8 text-xs border-purple-500/50 hover:bg-purple-500/10 hover:border-purple-500"
+                    title="Instantly detect category from description"
+                  >
+                    {isDetectingCategory ? (
+                      <>
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        Detecting...
+                      </>
+                    ) : (
+                      <>
+                        <span className="mr-1">⚡</span>
+                        Detect Now
+                      </>
+                    )}
+                  </Button>
+                </div>
                 <Select
                   onValueChange={(value) => setValue("category", value)}
                   defaultValue={getValues("category")}
