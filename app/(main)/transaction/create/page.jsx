@@ -6,7 +6,7 @@ import { getTransaction } from "@/actions/transaction";
 export const dynamic = "force-dynamic";
 
 export default async function AddTransactionPage({ searchParams }) {
-  // ✅ Await searchParams before accessing its properties
+  // Await searchParams before accessing its properties
   const editId = (await searchParams)?.edit;
 
   const [accounts, userCurrencyData] = await Promise.all([
@@ -37,6 +37,18 @@ export default async function AddTransactionPage({ searchParams }) {
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
             Use voice commands, scan receipts, or fill the form manually. Your financial data is processed instantly.
           </p>
+          
+          {/* Voice Assistant Quick Tip */}
+          {!editId && (
+            <div className="flex items-center justify-center mt-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-xs sm:text-sm">
+                <kbd className="px-2 py-0.5 bg-background rounded text-xs font-mono border">Ctrl</kbd>
+                <span>+</span>
+                <kbd className="px-2 py-0.5 bg-background rounded text-xs font-mono border">Space</kbd>
+                <span className="font-medium">for Voice Input</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <AddTransactionForm

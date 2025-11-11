@@ -14,7 +14,7 @@ const serializeAmount = (obj) => ({
   amount: obj.amount.toNumber(),
 });
 
-// ✅ AI-Powered Category Detection
+//  AI-Powered Category Detection
 export async function detectCategoryFromDescription(description, type = "EXPENSE") {
   try {
     if (!description || description.trim().length < 3) {
@@ -121,7 +121,7 @@ export async function createTransaction(data) {
       throw new Error("Account not found");
     }
 
-    // ✅ Validate sufficient balance for EXPENSE transactions
+    // Validate sufficient balance for EXPENSE transactions
     if (data.type === "EXPENSE") {
       const currentBalance = account.balance.toNumber();
       
@@ -132,7 +132,7 @@ export async function createTransaction(data) {
       }
     }
 
-    // ✅ AI-Powered Auto Category Detection
+    //  AI-Powered Auto Category Detection
     let finalCategory = data.category;
     
     // If no category provided or category is "other", try to detect from description
@@ -236,7 +236,7 @@ export async function updateTransaction(id, data) {
 
     const netBalanceChange = newBalanceChange - oldBalanceChange;
     
-    // ✅ Validate sufficient balance for updated EXPENSE transactions
+    //  Validate sufficient balance for updated EXPENSE transactions
     if (data.type === "EXPENSE") {
       const currentBalance = originalTransaction.account.balance.toNumber();
       const balanceAfterChange = currentBalance + netBalanceChange;

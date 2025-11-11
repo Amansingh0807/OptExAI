@@ -4,7 +4,7 @@ import { savingsSchema } from "@/lib/saving";
 
 let savingsData = []; // Temporary storage (Replace with DB later)
 
-// 🟢 Create a savings goal
+//  Create a savings goal
 export async function createSaving(goalAmount, description, motive) {
   const newSaving = {
     id: crypto.randomUUID(),
@@ -24,12 +24,12 @@ export async function createSaving(goalAmount, description, motive) {
   return newSaving;
 }
 
-// 🟢 Fetch all savings
+// Fetch all savings
 export async function getSavings() {
   return savingsData;
 }
 
-// 🟢 Add saved money
+//  Add saved money
 export async function addSavedMoney(savingId, amount) {
   const saving = savingsData.find((s) => s.id === savingId);
   if (!saving) throw new Error("Saving goal not found");

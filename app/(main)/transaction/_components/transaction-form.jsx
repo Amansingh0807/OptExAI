@@ -10,6 +10,7 @@ import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { VoiceInput } from "@/components/voice-input";
+import { VoiceAssistant } from "@/components/voice-assistant";
 import { convertCurrency } from "@/lib/currency";
 
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,25 @@ export function AddTransactionForm({
   const [previousAccountCurrency, setPreviousAccountCurrency] = useState(null);
   const [isDetectingCategory, setIsDetectingCategory] = useState(false);
   const [isConvertingAmount, setIsConvertingAmount] = useState(false);
+
+  // Show voice assistant tip on mount
+  useEffect(() => {
+    if (!editMode) {
+      const hasSeenTip = localStorage.getItem('voiceAssistantTipShown');
+      if (!hasSeenTip) {
+        setTimeout(() => {
+          toast.info("💡 Voice Assistant Available!", {
+            description: 'Press Ctrl+Space to add transactions with voice commands',
+            duration: 5000,
+            action: {
+              label: "Got it",
+              onClick: () => localStorage.setItem('voiceAssistantTipShown', 'true')
+            }
+          });
+        }, 1000);
+      }
+    }
+  }, [editMode]);
 
   const {
     register,
@@ -587,23 +607,43 @@ export function AddTransactionForm({
                 </div>
               </div>
 
-              {/* Voice Input */}
-              <div className="space-y-2">
+              {/* Voice Assistant - Keyboard Shortcut */}
+              <div className="space-y-3">
                 <label className="text-sm font-semibold flex items-center gap-2">
                   <span className="text-lg">🎤</span>
-                  Quick Voice Input
+                  Voice Assistant
+                  <Badge variant="outline" className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600 border-purple-500/20">
+                    New!
+                  </Badge>
                 </label>
-                <div className="p-6 border-2 rounded-2xl bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm hover:border-primary/50 transition-all">
-                  <VoiceInput 
+                <div className="p-6 border-2 rounded-2xl bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-blue-500/5 backdrop-blur-sm hover:border-primary/50 transition-all">
+                  <VoiceAssistant 
                     onVoiceResult={handleVoiceResult}
                     disabled={transactionLoading}
+                    enableWakeWord={false}
+                    enableShortcut={true}
                   />
-                  <p className="text-xs text-muted-foreground mt-3 flex items-start gap-2">
-                    <span>💡</span>
-                    <span>
-                      <strong>Try:</strong> "Add 500 rupees for dinner at Domino's" or "200 rupees uber ride"
-                    </span>
-                  </p>
+                  <div className="mt-4 space-y-2">
+                    <p className="text-xs text-muted-foreground flex items-start gap-2">
+                      <span>💡</span>
+                      <span>
+                        <strong>2 Ways to activate:</strong>
+                      </span>
+                    </p>
+                    <div className="pl-6 space-y-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-purple-500" />
+                        <span>Click the button above</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-1 h-1 rounded-full bg-blue-500" />
+                        <span>Press <kbd className="px-1 py-0.5 bg-muted rounded text-xs">Ctrl+Space</kbd></span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-3 pl-6">
+                      <strong>Example:</strong> "Add 500 rupees for dinner at Domino's"
+                    </p>
+                  </div>
                 </div>
               </div>
 
