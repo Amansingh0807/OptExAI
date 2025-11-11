@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Mic, MicOff, Volume2, Loader2, Sparkles, X, Zap } from "lucide-react";
+import { Mic, MicOff, Volume2, Loader2, Sparkles, X, Zap, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -149,7 +149,7 @@ export function VoiceAssistant({ onVoiceResult, disabled = false, enableWakeWord
       console.log('Parsed voice result:', result);
       onVoiceResult(result);
       
-      toast.success(`✓ Transaction ready!`, {
+      toast.success(`Transaction ready!`, {
         description: `₹${amount} for ${description}`,
         duration: 3000
       });
@@ -315,7 +315,7 @@ export function VoiceAssistant({ onVoiceResult, disabled = false, enableWakeWord
         e.preventDefault();
         if (!showModal && !disabled) {
           setShowModal(true);
-          toast.info("🎤 Voice assistant activated", { duration: 1500 });
+          toast.info("Voice assistant activated", { duration: 1500 });
           setTimeout(() => {
             startListening();
           }, 300);
@@ -340,7 +340,7 @@ export function VoiceAssistant({ onVoiceResult, disabled = false, enableWakeWord
 
     try {
       recognitionRef.current?.start();
-      toast.info("🎤 Listening... Speak now!");
+      toast.info("Listening... Speak now!");
     } catch (error) {
       console.error('Error starting recognition:', error);
       toast.error("Failed to start voice recognition");

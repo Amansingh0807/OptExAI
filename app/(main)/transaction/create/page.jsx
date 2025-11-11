@@ -3,6 +3,7 @@ import { getUserCurrency } from "@/actions/currency";
 import { defaultCategories } from "@/data/categories";
 import { AddTransactionForm } from "../_components/transaction-form";
 import { getTransaction } from "@/actions/transaction";
+import { DollarSign, Keyboard, Mic } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function AddTransactionPage({ searchParams }) {
@@ -28,7 +29,7 @@ export default async function AddTransactionPage({ searchParams }) {
         {/* Hero Header */}
         <div className="text-center mb-8 sm:mb-12 space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 mb-3 sm:mb-4 mt-6 sm:mt-10 text-xs sm:text-sm">
-            <span className="text-xl sm:text-2xl">💰</span>
+            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             <span className="font-medium text-primary">Smart Transaction Manager</span>
           </div>
           <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold gradient-title px-2">
@@ -42,10 +43,12 @@ export default async function AddTransactionPage({ searchParams }) {
           {!editId && (
             <div className="flex items-center justify-center mt-4">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 text-xs sm:text-sm">
+                <Keyboard className="w-3.5 h-3.5 text-blue-600" />
                 <kbd className="px-2 py-0.5 bg-background rounded text-xs font-mono border">Ctrl</kbd>
                 <span>+</span>
                 <kbd className="px-2 py-0.5 bg-background rounded text-xs font-mono border">Space</kbd>
                 <span className="font-medium">for Voice Input</span>
+                <Mic className="w-3.5 h-3.5 text-purple-600" />
               </div>
             </div>
           )}

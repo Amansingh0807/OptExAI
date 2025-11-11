@@ -3,7 +3,21 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { 
+  CalendarIcon, 
+  Loader2, 
+  Mic, 
+  FileText, 
+  DollarSign, 
+  Building2, 
+  Tag, 
+  Clock, 
+  Repeat, 
+  Lightbulb,
+  Sparkles,
+  ArrowUpCircle,
+  ArrowDownCircle
+} from "lucide-react";
 import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
 import useFetch from "@/hooks/use-fetch";
@@ -59,7 +73,7 @@ export function AddTransactionForm({
       const hasSeenTip = localStorage.getItem('voiceAssistantTipShown');
       if (!hasSeenTip) {
         setTimeout(() => {
-          toast.info("💡 Voice Assistant Available!", {
+          toast.info("Voice Assistant Available!", {
             description: 'Press Ctrl+Space to add transactions with voice commands',
             duration: 5000,
             action: {
@@ -213,8 +227,7 @@ export function AddTransactionForm({
       if (scannedData.category) {
         setValue("category", scannedData.category);
         toast.success(`Receipt scanned! AI detected category: ${scannedData.category}`, {
-          duration: 4000,
-          icon: "🤖"
+          duration: 4000
         });
       } else {
         toast.success("Receipt scanned successfully");
@@ -274,7 +287,7 @@ export function AddTransactionForm({
       if (suggestedCategory) {
         setValue("category", suggestedCategory);
         const categoryName = categories.find(c => c.id === suggestedCategory)?.name || suggestedCategory;
-        toast.success(`🤖 AI suggests: ${categoryName}`, {
+        toast.success(`AI suggests: ${categoryName}`, {
           duration: 3000,
         });
       } else {
@@ -332,10 +345,10 @@ export function AddTransactionForm({
         if (suggestedCategory) {
           setValue("category", suggestedCategory);
           const categoryName = categories.find(c => c.id === suggestedCategory)?.name || suggestedCategory;
-          console.log(`🤖 Auto-detected category: ${categoryName} for "${currentDescription}"`);
+          console.log(`AI Auto-detected category: ${categoryName} for "${currentDescription}"`);
           
           // Show subtle toast (not too intrusive)
-          toast.success(`🤖 Category auto-detected: ${categoryName}`, {
+          toast.success(`Category auto-detected: ${categoryName}`, {
             duration: 2000,
           });
         }
@@ -384,7 +397,7 @@ export function AddTransactionForm({
               {/* Type */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold flex items-center gap-2">
-                  <span className="text-lg">📝</span>
+                  <FileText className="w-4 h-4 text-primary" />
                   Transaction Type
                 </label>
                 <Select
@@ -397,13 +410,13 @@ export function AddTransactionForm({
                   <SelectContent>
                     <SelectItem value="EXPENSE" className="text-base">
                       <div className="flex items-center gap-2">
-                        <span className="text-red-500">↓</span>
+                        <ArrowDownCircle className="w-4 h-4 text-red-500" />
                         <span>Expense</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="INCOME" className="text-base">
                       <div className="flex items-center gap-2">
-                        <span className="text-green-500">↑</span>
+                        <ArrowUpCircle className="w-4 h-4 text-green-500" />
                         <span>Income</span>
                       </div>
                     </SelectItem>
@@ -419,7 +432,7 @@ export function AddTransactionForm({
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
-                      <span className="text-lg">💰</span>
+                      <DollarSign className="w-4 h-4 text-primary" />
                       Amount
                     </span>
                     {userCurrency && (
@@ -437,8 +450,9 @@ export function AddTransactionForm({
                   />
                   {userCurrency ? (
                     <div className="flex items-center gap-2 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                      <Lightbulb className="w-4 h-4 text-primary" />
                       <span className="text-sm text-primary font-medium">
-                        💡 Enter amount in {userCurrency}
+                        Enter amount in {userCurrency}
                       </span>
                     </div>
                   ) : (
@@ -455,7 +469,7 @@ export function AddTransactionForm({
 
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">🏦</span>
+                    <Building2 className="w-4 h-4 text-primary" />
                     Account
                   </label>
                   <Select
@@ -502,7 +516,7 @@ export function AddTransactionForm({
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">🏷️</span>
+                    <Tag className="w-4 h-4 text-primary" />
                     Category
                     {isDetectingCategory && (
                       <span className="text-xs text-purple-500 animate-pulse">
@@ -526,7 +540,7 @@ export function AddTransactionForm({
                       </>
                     ) : (
                       <>
-                        <span className="mr-1">⚡</span>
+                        <Sparkles className="mr-1 h-3 w-3" />
                         Detect Now
                       </>
                     )}
@@ -557,7 +571,7 @@ export function AddTransactionForm({
                 {/* Date */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">📅</span>
+                    <CalendarIcon className="w-4 h-4 text-primary" />
                     Date
                   </label>
                   <Popover>
@@ -593,7 +607,7 @@ export function AddTransactionForm({
                 {/* Description */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">📄</span>
+                    <FileText className="w-4 h-4 text-primary" />
                     Description
                   </label>
                   <Input 
@@ -610,7 +624,7 @@ export function AddTransactionForm({
               {/* Voice Assistant - Keyboard Shortcut */}
               <div className="space-y-3">
                 <label className="text-sm font-semibold flex items-center gap-2">
-                  <span className="text-lg">🎤</span>
+                  <Mic className="w-4 h-4 text-primary" />
                   Voice Assistant
                   <Badge variant="outline" className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 text-purple-600 border-purple-500/20">
                     New!
@@ -625,7 +639,7 @@ export function AddTransactionForm({
                   />
                   <div className="mt-4 space-y-2">
                     <p className="text-xs text-muted-foreground flex items-start gap-2">
-                      <span>💡</span>
+                      <Lightbulb className="w-4 h-4 text-primary flex-shrink-0" />
                       <span>
                         <strong>2 Ways to activate:</strong>
                       </span>
@@ -651,7 +665,7 @@ export function AddTransactionForm({
               <div className="flex flex-row items-center justify-between rounded-2xl border-2 p-5 bg-gradient-to-r from-background to-primary/5 hover:border-primary/50 transition-colors">
                 <div className="space-y-0.5">
                   <label className="text-base font-semibold flex items-center gap-2">
-                    <span className="text-lg">🔄</span>
+                    <Repeat className="w-4 h-4 text-primary" />
                     Recurring Transaction
                   </label>
                   <div className="text-sm text-muted-foreground">
@@ -668,7 +682,7 @@ export function AddTransactionForm({
               {isRecurring && (
                 <div className="space-y-2 animate-in fade-in-50 duration-300">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <span className="text-lg">⏱️</span>
+                    <Clock className="w-4 h-4 text-primary" />
                     Recurring Interval
                   </label>
                   <Select
@@ -679,10 +693,10 @@ export function AddTransactionForm({
                       <SelectValue placeholder="Select interval" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="DAILY">📆 Daily</SelectItem>
-                      <SelectItem value="WEEKLY">📅 Weekly</SelectItem>
-                      <SelectItem value="MONTHLY">🗓️ Monthly</SelectItem>
-                      <SelectItem value="YEARLY">📊 Yearly</SelectItem>
+                      <SelectItem value="DAILY">Daily</SelectItem>
+                      <SelectItem value="WEEKLY">Weekly</SelectItem>
+                      <SelectItem value="MONTHLY">Monthly</SelectItem>
+                      <SelectItem value="YEARLY">Yearly</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors.recurringInterval && (
@@ -809,7 +823,7 @@ export function AddTransactionForm({
           {/* Quick Tips Card */}
           <div className="rounded-2xl bg-card/50 backdrop-blur-sm border p-5">
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">💡</span>
+              <Lightbulb className="w-5 h-5 text-primary" />
               <h4 className="font-semibold">Quick Tips</h4>
             </div>
             <ul className="space-y-2 text-sm text-muted-foreground">
