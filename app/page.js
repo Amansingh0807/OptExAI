@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
+import { Rocket } from "lucide-react";
 import {
   featuresData,
   howItWorksData,
@@ -155,7 +156,7 @@ const LandingPage = () => {
               className="bg-white text-purple-600 hover:bg-gray-100 hover:text-purple-700 font-semibold px-8 py-4 rounded-full shadow-2xl hover:shadow-3xl transform transition-all duration-300 hover:scale-110 hover:-translate-y-2 animate-bounce"
             >
               Start Free Trial
-              <span className="ml-2">🚀</span>
+              <Rocket className="ml-2 w-5 h-5" />
             </Button>
           </Link>
         </div>

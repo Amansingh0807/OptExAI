@@ -117,7 +117,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
     }
   }, [error]);
 
-  // ✅ Send email using EmailJS from client-side - ONCE per budget update
+  // Send email using EmailJS from client-side - ONCE per budget update
   useEffect(() => {
     const sendBudgetAlert = async () => {
       // Only send if budget exists and is >= 90% used
@@ -144,7 +144,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
         const hoursSinceLastAlert = (now - lastAlert) / (1000 * 60 * 60);
         
         if (hoursSinceLastAlert < 24) {
-          console.log(`⏭️ Budget alert already sent ${hoursSinceLastAlert.toFixed(1)} hours ago. Skipping.`);
+          console.log(`Budget alert already sent ${hoursSinceLastAlert.toFixed(1)} hours ago. Skipping.`);
           setEmailSent(true);
           isSendingEmail.current = false;
           return;
@@ -170,7 +170,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
           reply_to: userEmail, // Reply-to address
         };
 
-        console.log("📧 Sending ONE budget alert email:", templateParams);
+        console.log("Sending ONE budget alert email:", templateParams);
 
         // Send email using EmailJS client-side SDK
         const result = await emailjs.send(
@@ -181,7 +181,7 @@ export function BudgetProgress({ initialBudget, currentExpenses, userEmail, user
         );
 
         if (result.status === 200) {
-          console.log("✅ Budget alert email sent successfully!");
+          console.log("Budget alert email sent successfully!");
           toast.success("Budget alert email sent!");
           setEmailSent(true);
 

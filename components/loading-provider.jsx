@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Rocket, BarChart3, Sparkles } from "lucide-react";
 
 const LoadingContext = createContext({
   isLoading: false,
@@ -235,9 +236,9 @@ const GlobalLoader = () => {
 const LoadingMessages = () => {
   const [messageIndex, setMessageIndex] = useState(0);
   const messages = [
-    { text: "Loading page...", icon: "🚀" },
-    { text: "Preparing content...", icon: "📊" },
-    { text: "Almost ready...", icon: "✨" },
+    { text: "Loading page...", icon: <Rocket className="w-5 h-5" /> },
+    { text: "Preparing content...", icon: <BarChart3 className="w-5 h-5" /> },
+    { text: "Almost ready...", icon: <Sparkles className="w-5 h-5" /> },
   ];
 
   useEffect(() => {

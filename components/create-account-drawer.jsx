@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, DollarSign } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { useCurrency } from "@/components/currency-provider";
@@ -151,7 +151,7 @@ export function CreateAccountDrawer({ children }) {
               {errors.balance && <p className="text-sm text-red-500">{errors.balance.message}</p>}
               {userCurrency ? (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/5 border border-primary/20">
-                  <span className="text-2xl">💰</span>
+                  <DollarSign className="w-6 h-6 text-primary" />
                   <div className="flex-1">
                     <p className="text-xs font-medium text-primary">
                       Account will be created in {userCurrency}

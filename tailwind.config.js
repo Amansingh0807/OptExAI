@@ -11,7 +11,7 @@ module.exports = {
       },
     },
     plugins: [
-      require('tw-animate-css'), // ✅ Correct way to include it
+      require('tw-animate-css'), // Correct way to include it
     ],
   };
   

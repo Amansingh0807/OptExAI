@@ -72,7 +72,7 @@ export function VoiceInput({ onVoiceResult, disabled = false, className }) {
         recognition.onstart = () => {
           setIsListening(true);
           setTranscript("");
-          toast.info("🎤 Listening... Speak now!");
+          toast.info("Listening... Speak now!");
         };
 
         recognition.onresult = (event) => {
@@ -410,7 +410,7 @@ export function VoiceInput({ onVoiceResult, disabled = false, className }) {
           </div>
           
           <div className="text-xs text-muted-foreground">
-            <p><strong>💡 Tips:</strong></p>
+            <p><strong>Tips:</strong></p>
             <ul className="list-disc list-inside space-y-1 mt-1">
               <li>Say amount clearly: "500 rupees" or "₹500"</li>
               <li>Include details: "dinner at Domino's" or "uber ride"</li>

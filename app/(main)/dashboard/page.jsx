@@ -7,7 +7,7 @@ import { AccountCard } from "./_components/account-card";
 import { CreateAccountDrawer } from "@/components/create-account-drawer";
 import { BudgetProgress } from "./_components/budget-progress";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, BarChart3, CreditCard, Building2 } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
 import { SpendingHeatmap } from "./_components/spending-heatmap";
 export const dynamic = "force-dynamic";
@@ -37,7 +37,7 @@ export default async function DashboardPage() {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold gradient-title">Dashboard</h1>
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
               <p className="text-sm text-muted-foreground">Manage all your financial accounts</p>
             </div>
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <span className="text-xl">💳</span>
+              <CreditCard className="w-5 h-5 text-primary" />
             </div>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-16">
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
                 <Card className="border-dashed">
                   <CardContent className="flex flex-col items-center justify-center text-muted-foreground p-12 text-center">
                     <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                      <span className="text-4xl">🏦</span>
+                      <Building2 className="w-10 h-10 text-primary" />
                     </div>
                     <p className="text-lg font-medium mb-2">No accounts yet</p>
                     <p className="text-sm">Create your first account to start tracking your finances</p>

@@ -249,7 +249,7 @@ export function VoiceAssistant({ onVoiceResult, disabled = false, enableWakeWord
             // Check for wake word
             if (transcript.includes('hey optex') || transcript.includes('hey opt') || transcript.includes('hey op tex')) {
               console.log('Wake word detected!');
-              toast.success("👋 Hey! I'm listening...", { duration: 2000 });
+              toast.success("Hey! I'm listening...", { duration: 2000 });
               wakeWordRecognition.stop();
               setShowModal(true);
               setTimeout(() => {

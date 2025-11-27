@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { Flame } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
@@ -182,7 +183,7 @@ export function SpendingHeatmap({ transactions, userCurrency }) {
         <CardHeader>
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">🔥</span>
+              <Flame className="w-6 h-6 text-orange-500" />
               <CardTitle>Activity Heatmap</CardTitle>
             </div>
             <div className="flex items-center gap-3 text-xs flex-wrap">

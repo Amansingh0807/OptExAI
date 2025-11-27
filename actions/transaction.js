@@ -140,7 +140,7 @@ export async function createTransaction(data) {
       const detectedCategory = await detectCategoryFromDescription(data.description, data.type);
       if (detectedCategory) {
         finalCategory = detectedCategory;
-        console.log(`✨ Auto-detected category: ${detectedCategory} for "${data.description}"`);
+        console.log(`Auto-detected category: ${detectedCategory} for "${data.description}"`);
       }
     }
 

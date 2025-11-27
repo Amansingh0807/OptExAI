@@ -364,7 +364,7 @@ export function AddTransactionForm({
             disabled={transactionLoading}
           />
           <p className="text-xs text-muted-foreground mt-2">
-            🎤 <strong>Say something like:</strong> "Add 500 rupees for dinner at Domino's" or "200 rupees uber ride"
+            <strong>Say something like:</strong> "Add 500 rupees for dinner at Domino's" or "200 rupees uber ride"
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { getAccountWithTransactions } from "@/actions/account";
 import { getUserCurrency } from "@/actions/currency";
 import { BarLoader } from "react-spinners";
+import { CreditCard, BarChart3, FileText } from "lucide-react";
 import { TransactionTable } from "../_components/transaction-table";
 import { notFound } from "next/navigation";
 import { AccountChart } from "../_components/account-chart";
@@ -9,7 +10,7 @@ import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 // Ensure this is an async server component
 export default async function AccountPage({ params }) {
-  // ✅ Await params before accessing its properties
+  // Await params before accessing its properties
   const { id: accountId } = await params;
 
   if (!accountId) {
@@ -41,7 +42,7 @@ export default async function AccountPage({ params }) {
             {/* Account Info */}
             <div className="flex items-center gap-4">
               <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
-                <span className="text-3xl">💳</span>
+                <CreditCard className="w-8 h-8 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl sm:text-4xl font-bold gradient-title capitalize">
@@ -80,7 +81,7 @@ export default async function AccountPage({ params }) {
         <div className="rounded-3xl bg-card/50 backdrop-blur-sm border-2 border-border/50 shadow-xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">📊</span>
+              <BarChart3 className="w-6 h-6 text-primary" />
               <h2 className="text-xl font-bold">Transaction Overview</h2>
             </div>
             <Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}>
@@ -93,7 +94,7 @@ export default async function AccountPage({ params }) {
         <div className="rounded-3xl bg-card/50 backdrop-blur-sm border-2 border-border/50 shadow-xl overflow-hidden">
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">📝</span>
+              <FileText className="w-6 h-6 text-primary" />
               <h2 className="text-xl font-bold">Recent Transactions</h2>
             </div>
             <Suspense fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}>

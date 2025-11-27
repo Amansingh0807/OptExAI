@@ -13,9 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Rocket, PlayCircle, TrendingUp, CheckCircle } from "lucide-react";
 import { PricingPlan, pricingPlan } from "@/lib/pricingplan";
 import { useRouter } from "next/navigation";
-import { getStripe } from "@/lib/stripe-client"; // ✅ Ensure this path is correct
+import { getStripe } from "@/lib/stripe-client"; // Ensure this path is correct
 
 // type Props = {
 //   userId: string | undefined;
@@ -98,13 +99,13 @@ const HeroSection = ({ userId }) => {
           <Link href="/dashboard">
             <Button size="lg" className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border-none shadow-2xl hover:shadow-3xl transform transition-all duration-300 hover:scale-110 hover:-translate-y-2 rounded-full font-semibold">
               Get Started Free
-              <span className="ml-2">🚀</span>
+              <Rocket className="ml-2 w-5 h-5" />
             </Button>
           </Link>
           <Link href="/">
             <Button size="lg" variant="outline" className="w-full sm:w-auto px-8 py-4 border-2 border-gray-300 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-400 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 rounded-full font-semibold">
               Watch Demo
-              <span className="ml-2">📺</span>
+              <PlayCircle className="ml-2 w-5 h-5" />
             </Button>
           </Link>
         </div>
@@ -137,7 +138,7 @@ const HeroSection = ({ userId }) => {
                 <CardHeader className="flex flex-row items-center gap-2">
                   <CardTitle>{plan.level}</CardTitle>
                   {plan.level === "Pro" && (
-                    <Badge className="text text-center">🚨 Popular</Badge>
+                    <Badge className="text text-center"><TrendingUp className="w-3 h-3 mr-1 inline" /> Popular</Badge>
                   )}
                 </CardHeader>
                 <CardContent className="flex-1">
@@ -145,7 +146,7 @@ const HeroSection = ({ userId }) => {
                   <ul className="mt-4 space-y-2">
                     {plan.services.map((item, idx) => (
                       <li className="flex items-center" key={`${item}-${idx}`}>
-                        <span className="text-green-500 mr-2">✔️</span> {item}
+                        <CheckCircle className="text-green-500 mr-2 w-4 h-4" /> {item}
                       </li>
                     ))}
                   </ul>

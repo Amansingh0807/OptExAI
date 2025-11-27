@@ -16,7 +16,8 @@ import {
   Lightbulb,
   Sparkles,
   ArrowUpCircle,
-  ArrowDownCircle
+  ArrowDownCircle,
+  Eye
 } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -269,7 +270,7 @@ export function AddTransactionForm({
     }
   };
 
-  // ✨ AI Category Suggestion Handler
+  // AI Category Suggestion Handler
   const handleSuggestCategory = async () => {
     const description = watch("description");
     const transactionType = watch("type");
@@ -319,7 +320,7 @@ export function AddTransactionForm({
   const currentDescription = watch("description");
   const currentCategory = watch("category");
 
-  // ✨ Auto-detect category when description changes (with debounce)
+  // Auto-detect category when description changes (with debounce)
   useEffect(() => {
     // Don't auto-detect if:
     // 1. No description
@@ -746,7 +747,7 @@ export function AddTransactionForm({
           {/* Live Preview Card */}
           <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 backdrop-blur-xl border-2 border-primary/20 p-6 shadow-2xl">
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-2xl">👁️</span>
+              <Eye className="w-6 h-6" />
               <h3 className="text-lg font-bold">Live Preview</h3>
             </div>
             
