@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Mail, Heart, ArrowUpRight } from "lucide-react";
+import { Github, Twitter, Linkedin, Mail, Heart, ArrowUpRight, DollarSign, Rocket, Building2, Scale, Users } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -14,7 +14,7 @@ export default function Footer() {
       { name: "Pricing", href: "#" },
     ],
     company: [
-      { name: "About Us", href: "#" },
+      { name: "About Us", href: "/about" },
       { name: "Blog", href: "#" },
       { name: "Support", href: "#" },
       { name: "Contact", href: "#" },
@@ -48,7 +48,7 @@ export default function Footer() {
             <div className="lg:col-span-2">
               <div className="flex items-center gap-3 mb-4">
                 <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">💰</span>
+                  <DollarSign className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-2xl font-bold gradient-title">OptEx</span>
               </div>
@@ -79,7 +79,7 @@ export default function Footer() {
             {/* Product Links */}
             <div>
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="text-lg">🚀</span>
+                <Rocket className="h-5 w-5 text-primary" />
                 Product
               </h3>
               <ul className="space-y-3">
@@ -100,7 +100,7 @@ export default function Footer() {
             {/* Company Links */}
             <div>
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="text-lg">🏢</span>
+                <Building2 className="h-5 w-5 text-primary" />
                 Company
               </h3>
               <ul className="space-y-3">
@@ -122,7 +122,7 @@ export default function Footer() {
             {/* Legal Links */}
             <div>
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <span className="text-lg">⚖️</span>
+                <Scale className="h-5 w-5 text-primary" />
                 Legal
               </h3>
               <ul className="space-y-3">
@@ -148,7 +148,7 @@ export default function Footer() {
             {/* About the Creator */}
             <div className="flex-1 max-w-md">
               <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                <span className="text-lg">🧑‍💻</span>
+                <Users className="h-5 w-5 text-primary" />
                 About the Creator
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
