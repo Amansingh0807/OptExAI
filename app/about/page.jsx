@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Suspense, useEffect, useRef, useState } from "react";
 
 function AboutPageContent() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState(null);
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -39,8 +39,10 @@ function AboutPageContent() {
       });
     }
 
+    let animationFrameId;
+
     function animate() {
-      requestAnimationFrame(animate);
+      animationFrameId = requestAnimationFrame(animate);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle, i) => {
@@ -80,7 +82,12 @@ function AboutPageContent() {
       canvas.height = window.innerHeight;
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const principles = [
@@ -123,7 +130,9 @@ function AboutPageContent() {
       <div 
         className="fixed inset-0 pointer-events-none transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.08), transparent 40%)`,
+          background: mousePosition
+            ? `radial-gradient(600px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.08), transparent 40%)`
+            : 'transparent',
           zIndex: 1
         }}
       />
@@ -137,27 +146,27 @@ function AboutPageContent() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 py-24">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-16 sm:py-20 lg:py-24">
         
         {/* Hero Section */}
-        <div className="mb-32 animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-8 rounded-full border border-emerald-500/30 bg-emerald-500/5">
+        <div className="mb-20 sm:mb-24 lg:mb-32 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 mb-6 sm:mb-8 rounded-full border border-emerald-500/30 bg-emerald-500/10">
             <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-medium tracking-wider text-emerald-300 uppercase">About OptEx</span>
+            <span className="text-xs font-semibold tracking-wider text-emerald-700 dark:text-emerald-300 uppercase">About OptEx</span>
           </div>
 
-          <h1 className="text-7xl lg:text-8xl font-bold mb-8 leading-[0.9] tracking-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold mb-6 sm:mb-8 leading-[0.92] tracking-tight">
             <span className="block text-foreground font-serif italic" style={{ fontFamily: '"Playfair Display", serif' }}>Money should</span>
-            <span className="block text-emerald-500 dark:text-emerald-400 mt-2" style={{ fontFamily: 'monospace', letterSpacing: '-0.02em' }}>work_for_you</span>
+            <span className="block text-emerald-600 dark:text-emerald-400 mt-2" style={{ fontFamily: 'monospace', letterSpacing: '-0.02em' }}>work_for_you</span>
           </h1>
 
-          <p className="text-xl lg:text-2xl text-muted-foreground max-w-3xl leading-relaxed font-light">
+          <p className="text-base sm:text-xl lg:text-2xl text-muted-foreground max-w-3xl leading-relaxed font-light">
             We're building financial tools that respect your intelligence, protect your privacy, and actually help you make better decisions. No gimmicks. No surveillance capitalism. Just honest technology.
           </p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-20 sm:mb-24 lg:mb-32">
           {[
             { value: '100+', label: 'Trusted Users', detail: 'Managing their finances' },
             { value: '99.9%', label: 'Uptime SLA', detail: 'Always accessible' },
@@ -166,12 +175,12 @@ function AboutPageContent() {
           ].map((stat, i) => (
             <div 
               key={i} 
-              className="group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-card/50 to-card/20 p-6 hover:border-emerald-500/50 transition-all duration-500"
+              className="group relative overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-card/60 to-card/20 p-5 sm:p-6 hover:border-emerald-500/50 transition-all duration-500"
               style={{ animationDelay: `${i * 100}ms` }}
             >
               <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/0 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative">
-                <div className="text-4xl font-bold text-foreground mb-2 font-mono">{stat.value}</div>
+                <div className="text-3xl sm:text-4xl font-bold text-foreground mb-2 font-mono">{stat.value}</div>
                 <div className="text-sm font-semibold text-emerald-500 dark:text-emerald-400 mb-1 uppercase tracking-wider">{stat.label}</div>
                 <div className="text-xs text-muted-foreground">{stat.detail}</div>
               </div>
@@ -180,16 +189,16 @@ function AboutPageContent() {
         </div>
 
         {/* Principles Section */}
-        <div className="mb-32">
-          <h2 className="text-5xl font-bold text-foreground mb-16 tracking-tight">
+        <div className="mb-20 sm:mb-24 lg:mb-32">
+          <h2 className="text-3xl sm:text-5xl font-bold text-foreground mb-10 sm:mb-16 tracking-tight">
             <span className="text-muted-foreground">Our</span> Principles
           </h2>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className="grid lg:grid-cols-2 gap-5 sm:gap-8">
             {principles.map((principle, i) => (
               <div 
                 key={i}
-                className="group relative overflow-hidden rounded-3xl border border-border bg-card/30 p-10 hover:border-border/80 transition-all duration-500"
+                className="group relative overflow-hidden rounded-3xl border border-border bg-card/30 p-6 sm:p-10 hover:border-border/80 transition-all duration-500"
                 style={{ 
                   animationDelay: `${i * 150}ms`,
                 }}
@@ -208,7 +217,7 @@ function AboutPageContent() {
                     {principle.icon}
                   </div>
                   
-                  <h3 className="text-2xl font-bold text-foreground mb-4 tracking-tight">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-4 tracking-tight">
                     {principle.title}
                   </h3>
                   
@@ -222,15 +231,15 @@ function AboutPageContent() {
         </div>
 
         {/* Team Section */}
-        <div className="mb-32">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/50 to-card/20 p-12 lg:p-16">
+        <div className="mb-20 sm:mb-24 lg:mb-32">
+          <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-card/50 to-card/20 p-6 sm:p-12 lg:p-16">
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
             
-            <div className="relative grid lg:grid-cols-2 gap-12 items-center">
+            <div className="relative grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               <div>
                 <div className="mb-6">
                   <div className="inline-flex items-center gap-3">
-                    <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20">
+                    <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500/20">
                       <img 
                         src="/pic.jpg" 
                         alt="Aman Singh"
@@ -238,7 +247,7 @@ function AboutPageContent() {
                       />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-foreground">Aman Singh</div>
+                      <div className="text-xl sm:text-2xl font-bold text-foreground">Aman Singh</div>
                       <div className="text-sm text-muted-foreground font-mono">Founder / Lead Engineer</div>
                     </div>
                   </div>
@@ -255,7 +264,7 @@ function AboutPageContent() {
 
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-2xl blur-xl" />
-                <div className="relative rounded-2xl border border-border bg-card/80 p-8 backdrop-blur-sm">
+                <div className="relative rounded-2xl border border-border bg-card/80 p-6 sm:p-8 backdrop-blur-sm">
                   <div className="flex items-start gap-4 mb-6">
                     <Sparkle className="w-6 h-6 text-emerald-500 dark:text-emerald-400 flex-shrink-0 mt-1" />
                     <div>
@@ -283,22 +292,22 @@ function AboutPageContent() {
         </div>
 
         {/* CTA Section */}
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-16 text-center">
+        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 p-6 sm:p-12 lg:p-16 text-center">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgxNiwxODUsMTI5LDAuMSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
           
           <div className="relative">
-            <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-4 sm:mb-6 tracking-tight">
               Ready to take control?
             </h2>
             
-            <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+            <p className="text-base sm:text-xl text-muted-foreground mb-8 sm:mb-10 max-w-2xl mx-auto">
               Join thousands who've made the switch to transparent, intelligent financial management.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/dashboard">
                 <Button 
-                  className="group relative overflow-hidden bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-6 text-lg rounded-full shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/30 border-0"
+                  className="group relative w-full sm:w-auto overflow-hidden bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-6 text-lg rounded-full shadow-lg shadow-emerald-500/20 transition-all duration-300 hover:shadow-xl hover:shadow-emerald-500/30 border-0"
                 >
                   <span className="relative z-10 flex items-center gap-2">
                     Start Using OptEx
@@ -311,7 +320,7 @@ function AboutPageContent() {
               <Link href="/transaction/create">
                 <Button 
                   variant="outline"
-                  className="px-8 py-6 text-lg rounded-full border-2 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500 transition-all duration-300"
+                  className="w-full sm:w-auto px-8 py-6 text-lg rounded-full border-2 border-emerald-500/50 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500 transition-all duration-300"
                 >
                   Try the Demo
                 </Button>
@@ -339,6 +348,12 @@ function AboutPageContent() {
         
         .animate-fade-in {
           animation: fade-in 0.8s ease-out forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .animate-fade-in {
+            animation: none;
+          }
         }
       `}</style>
     </div>
