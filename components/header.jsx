@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import { PenBox, LayoutDashboard } from "lucide-react";
 import { PiggyBank  } from 'lucide-react';
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { checkUser } from "@/lib/checkUser";
 import Image from "next/image";
 import { DarkMode } from "@/components/DarkMode";
@@ -73,10 +73,15 @@ const Header = async () => {
           <SignedOut>
             <DarkMode />
             <SignInButton forceRedirectUrl="/dashboard">
-              <Button variant="outline" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white border-none hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Button variant="outline" className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-none hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-emerald-500/40 transition-all duration-300 hover:scale-105">
                 Login
               </Button>
             </SignInButton>
+            <SignUpButton forceRedirectUrl="/dashboard">
+              <Button variant="outline" className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/20 hover:border-emerald-500 shadow-sm transition-all duration-300 hover:scale-105">
+                Sign Up
+              </Button>
+            </SignUpButton>
           </SignedOut>
           <SignedIn>
             <UserButton
