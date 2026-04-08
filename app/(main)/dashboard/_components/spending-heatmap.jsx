@@ -335,7 +335,7 @@ export function SpendingHeatmap({ transactions, userCurrency }) {
               <div className="text-xs font-medium text-muted-foreground">Days with Expenses</div>
             </div>
             <div className="text-center space-y-1">
-              <div className="text-3xl font-bold gradient-title">
+              <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                 {heatmapData.filter(d => d.transactions.length > 0).length}
               </div>
               <div className="text-xs font-medium text-muted-foreground">Active Days</div>

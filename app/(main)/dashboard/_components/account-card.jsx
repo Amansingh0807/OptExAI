@@ -176,7 +176,7 @@ export function AccountCard({ account, userCurrency }) {
                   currency={userCurrency}
                   originalAmount={currency !== userCurrency ? balance : null}
                   originalCurrency={currency}
-                  className="text-3xl font-bold gradient-title"
+                  className="text-3xl font-bold text-emerald-600 dark:text-emerald-400"
                   showOriginal={true}
                 />
               </div>

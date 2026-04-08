@@ -40,8 +40,8 @@ export default async function DashboardPage() {
               <BarChart3 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl sm:text-4xl font-bold gradient-title">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {user?.firstName || 'User'}! Here's your financial overview.</p>
+              <h1 className="text-3xl sm:text-4xl font-bold text-emerald-600 dark:text-emerald-400">Dashboard</h1>
+              <p className="text-sm text-emerald-700/80 dark:text-emerald-300/80">Welcome back, {user?.firstName || 'User'}! Here's your financial overview.</p>
             </div>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
         <div>
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold gradient-title">Your Accounts</h2>
+              <h2 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Your Accounts</h2>
               <p className="text-sm text-muted-foreground">Manage all your financial accounts</p>
             </div>
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">

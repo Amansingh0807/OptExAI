@@ -768,7 +768,7 @@ export function AddTransactionForm({
               {/* Amount Display */}
               <div className="p-4 rounded-xl bg-background/50 text-center">
                 <div className="text-sm text-muted-foreground mb-1">Amount</div>
-                <div className="text-3xl font-bold gradient-title">
+                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                   {currentAmount ? (
                     parseFloat(currentAmount).toLocaleString(undefined, {
                       minimumFractionDigits: 2,

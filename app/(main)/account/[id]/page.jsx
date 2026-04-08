@@ -45,7 +45,7 @@ export default async function AccountPage({ params }) {
                 <CreditCard className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-bold gradient-title capitalize">
+                <h1 className="text-3xl sm:text-4xl font-bold text-emerald-600 dark:text-emerald-400 capitalize">
                   {account.name}
                 </h1>
                 <div className="flex items-center gap-3 mt-1">
@@ -65,7 +65,7 @@ export default async function AccountPage({ params }) {
               <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-purple-600 rounded-2xl opacity-50 group-hover:opacity-75 blur transition duration-300"></div>
               <div className="relative bg-background rounded-2xl p-4 sm:p-6 min-w-[200px]">
                 <p className="text-xs text-muted-foreground mb-1">Current Balance</p>
-                <div className="text-2xl sm:text-3xl font-bold gradient-title">
+                <div className="text-2xl sm:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                   <CurrencyDisplay 
                     amount={parseFloat(account.balance)} 
                     currency={account.currency}

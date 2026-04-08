@@ -32,10 +32,10 @@ export default async function AddTransactionPage({ searchParams }) {
             <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             <span className="font-medium text-primary">Smart Transaction Manager</span>
           </div>
-          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold gradient-title px-2">
+          <h1 className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl font-bold text-emerald-600 dark:text-emerald-400 px-2">
             {editId ? "Edit Transaction" : "Add Transaction"}
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base md:text-lg text-emerald-700/80 dark:text-emerald-300/80 max-w-2xl mx-auto px-4">
             Use voice commands, scan receipts, or fill the form manually. Your financial data is processed instantly.
           </p>
           
