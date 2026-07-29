@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
@@ -9,7 +9,8 @@ import { LoadingProvider } from "@/components/loading-provider";
 import { CurrencyProvider } from "@/components/currency-provider";
 import { getUserCurrency } from "@/actions/currency";
 
-const inter = Inter({ subsets: ["latin"] });
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const jetbrains = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains" });
 
 export const metadata = {
   title: "OptEx",
@@ -29,7 +30,7 @@ export default async function RootLayout({ children }) {
           <meta charSet="UTF-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         </head>
-        <body className={inter.className}>
+        <body className={`${playfair.variable} ${jetbrains.variable} font-mono antialiased`}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <CurrencyProvider currency={userCurrency}>
               <LoadingProvider>

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Mail, Heart, ArrowUpRight, DollarSign, Rocket, Building2, Scale, Users } from "lucide-react";
+import { Github, Twitter, Linkedin, Mail, ArrowUpRight } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -28,165 +28,110 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { name: "GitHub", icon: Github, href: "https://github.com/Amansingh0807/OptExAI", color: "hover:text-purple-500" },
-    { name: "Twitter", icon: Twitter, href: "https://x.com/Kuwardevv", color: "hover:text-blue-400" },
-    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/amansingh08/", color: "hover:text-blue-600" },
-    { name: "Email", icon: Mail, href: "mailto:amansingh0807@outlook.com", color: "hover:text-green-500" },
+    { name: "GitHub", icon: Github, href: "https://github.com/Amansingh0807/OptExAI" },
+    { name: "Twitter", icon: Twitter, href: "https://x.com/Kuwardevv" },
+    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/amansingh08/" },
+    { name: "Email", icon: Mail, href: "mailto:amansingh0807@outlook.com" },
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-background to-primary/5 border-t border-border/50">
-      {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+    <footer className="relative bg-background border-t border-border bg-dotted-grid font-mono overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 border-l border-r border-border mt-12">
+          
+          {/* Brand & Socials */}
+          <div className="col-span-1 border-b md:border-b-0 md:border-r border-border p-8">
+            <h3 className="font-playfair text-2xl font-black tracking-tighter mb-4">OPTEX.</h3>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest leading-relaxed mb-8">
+              Bespoke financial management. Track, manage, and scale your goals with raw precision.
+            </p>
+            
+            <div className="flex gap-4">
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="h-10 w-10 border border-border flex items-center justify-center hover:bg-foreground hover:text-background snappy-transition"
+                    aria-label={social.name}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
+            </div>
+          </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Main Footer Content */}
-        <div className="py-12 lg:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
-            {/* Brand Section */}
-            <div className="lg:col-span-2">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg">
-                  <DollarSign className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-2xl font-bold gradient-title">OptEx</span>
-              </div>
-              <p className="text-muted-foreground text-sm mb-6 max-w-sm">
-                Your all-in-one financial management platform. Track expenses, manage budgets, and achieve your financial goals with ease.
+          {/* Links Grid */}
+          {Object.entries(footerLinks).map(([category, links], index) => (
+            <div key={category} className={`col-span-1 p-8 border-b md:border-b-0 ${index !== 2 ? 'md:border-r border-border' : ''}`}>
+              <h3 className="text-xs font-bold uppercase tracking-widest text-foreground mb-6">
+                {category}
+              </h3>
+              <ul className="space-y-4 nav-stagger">
+                {links.map((link) => (
+                  <li key={link.name}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-primary snappy-hover inline-flex items-center gap-1 group py-1"
+                    >
+                      {link.name}
+                      <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Creator & Stats */}
+        <div className="border-x border-border">
+          <div className="grid grid-cols-1 md:grid-cols-2 border-t border-border">
+            <div className="p-8 border-b md:border-b-0 md:border-r border-border">
+              <h3 className="text-xs font-bold uppercase tracking-widest text-foreground mb-2">
+                Creator
+              </h3>
+              <p className="text-sm text-muted-foreground uppercase">
+                Aman Singh / Developer
               </p>
-              
-              {/* Social Links */}
-              <div className="flex items-center gap-3">
-                {socialLinks.map((social) => {
-                  const Icon = social.icon;
-                  return (
-                    <a
-                      key={social.name}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`h-10 w-10 rounded-xl bg-primary/10 hover:bg-primary/20 flex items-center justify-center transition-all duration-300 ${social.color}`}
-                      aria-label={social.name}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </a>
-                  );
-                })}
+            </div>
+            
+            <div className="p-8 flex gap-8 justify-around bg-foreground text-background">
+              <div className="text-center">
+                <div className="text-xl font-bold">10K+</div>
+                <div className="text-[10px] uppercase tracking-widest opacity-70">Users</div>
               </div>
-            </div>
-
-            {/* Product Links */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Rocket className="h-5 w-5 text-primary" />
-                Product
-              </h3>
-              <ul className="space-y-3">
-                {footerLinks.product.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1 group"
-                    >
-                      {link.name}
-                      <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Company Links */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-primary" />
-                Company
-              </h3>
-              <ul className="space-y-3">
-                {footerLinks.company.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1 group"
-                    >
-                      {link.name}
-                      <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-
-            {/* Legal Links */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <Scale className="h-5 w-5 text-primary" />
-                Legal
-              </h3>
-              <ul className="space-y-3">
-                {footerLinks.legal.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1 group"
-                    >
-                      {link.name}
-                      <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <div className="text-center">
+                <div className="text-xl font-bold">50K+</div>
+                <div className="text-[10px] uppercase tracking-widest opacity-70">Transacts</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-bold">99.9%</div>
+                <div className="text-[10px] uppercase tracking-widest opacity-70">Uptime</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* About Creator & Stats Section */}
-        <div className="border-t border-border/50 py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            {/* About the Creator */}
-            <div className="flex-1 max-w-md">
-              <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                About the Creator
-              </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Built by <span className="text-foreground font-medium">Aman Singh</span>, a Purpose Driven Software developer 
-                creating innovative financial solutions to help people manage their finances better.
-              </p>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex gap-8">
-              <div className="text-center">
-                <div className="text-2xl font-bold gradient-title">10K+</div>
-                <div className="text-xs text-muted-foreground">Active Users</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold gradient-title">50K+</div>
-                <div className="text-xs text-muted-foreground">Transactions</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold gradient-title">99.9%</div>
-                <div className="text-xs text-muted-foreground">Uptime</div>
-              </div>
-            </div>
-          
-          </div>
+        {/* Massive Typographic Display */}
+        <div className="border-x border-t border-border overflow-hidden bg-background py-8 flex justify-center items-center">
+          <span className="font-playfair text-[15vw] leading-none font-black tracking-tighter text-foreground">
+            OPTEX.
+          </span>
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-border/50 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground text-center sm:text-left">
-              © {currentYear} OptEx. All rights reserved. Built with{" "}
-              <Heart className="inline h-4 w-4 text-red-500 fill-current" /> by Aman Singh
-            </p>
-            
-           
-          </div>
+        <div className="border border-border py-4 px-8 mb-12 flex justify-between items-center text-[10px] uppercase tracking-widest text-muted-foreground bg-background">
+          <p>© {currentYear} OPTEX. ALL RIGHTS RESERVED.</p>
+          <p>BUILT WITH INTENT.</p>
         </div>
+
       </div>
     </footer>
   );
